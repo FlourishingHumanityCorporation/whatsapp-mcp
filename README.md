@@ -24,6 +24,16 @@ Here's an example of what you can do when it's connected to Claude.
 - UV (Python package manager), install with `curl -LsSf https://astral.sh/uv/install.sh | sh`
 - FFmpeg (_optional_) - Only needed for audio messages. If you want to send audio files as playable WhatsApp voice messages, they must be in `.ogg` Opus format. With FFmpeg installed, the MCP server will automatically convert non-Opus audio files. Without FFmpeg, you can still send raw audio files using the `send_file` tool.
 
+### Local Development Checks
+
+For CodeProjects validation, run this from the repository root:
+
+```bash
+make check
+```
+
+This check is intentionally non-live: it compiles the Python MCP source and Go bridge package, but does not start the bridge, start the MCP server, connect to WhatsApp, read the local message store, send messages, or download media.
+
 ### Steps
 
 1. **Clone this repository**

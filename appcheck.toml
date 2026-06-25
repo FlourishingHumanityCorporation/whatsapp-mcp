@@ -1,0 +1,32 @@
+[app]
+name = "whatsapp-mcp"
+type = "tool"
+
+[env]
+required = []
+optional = []
+
+[loc]
+max_lines = 1500
+extensions = [".py", ".go"]
+
+[docs]
+enabled = false
+
+[testing]
+service_markers = ["live_whatsapp", "whatsapp_bridge", "personal_messages", "message_send", "media_download"]
+xfail_require_strict = true
+
+[standards]
+definitions_path = "/Users/paulrohde/CodeProjects/docs/standards"
+
+[compat]
+enabled = true
+scan_deprecated_usage = true
+
+[[custom_checks]]
+name = "check"
+command = "cd ~/CodeProjects/tools/whatsapp-mcp && make check"
+description = "WhatsApp MCP syntax and Go package compilation pass without starting the bridge, MCP server, WhatsApp connection, or message-store reads"
+timeout = 180
+fail_on_stderr = true

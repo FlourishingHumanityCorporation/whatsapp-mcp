@@ -1,0 +1,23 @@
+.venv*/
+__pycache__/
+*.pyc
+.mypy_cache/
+.pytest_cache/
+.ruff_cache/
+dist/
+build/
+*.egg-info/
+tests/
+
+# Private/generated WhatsApp operator data.
+whatsapp-bridge/store/
+whatsapp-bridge/*.db
+*.db
+whatsapp.log
+
+# Built bridge binary.
+whatsapp-bridge/whatsapp-bridge
+
+# Generated navigation files are maintained by workspace tooling.
+SYMBOLS.md
+SYMBOLS-full.md

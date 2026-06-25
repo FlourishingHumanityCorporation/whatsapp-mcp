@@ -2,6 +2,9 @@
 claude_desktop_config.json
 whatsapp.log
 
+# Private/generated WhatsApp operator data and media downloads.
+whatsapp-bridge/store/
+
 # Compiled Go bridge binary (built locally, not source)
 whatsapp-bridge/whatsapp-bridge
 
