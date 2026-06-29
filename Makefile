@@ -1,4 +1,4 @@
-PYTHON ?= python3
+PYTHON ?= $(shell ls $(HOME)/.pyenv/versions/3.1[2-9]*/bin/python3 2>/dev/null | sort -r | head -1 || echo python3)
 
 .PHONY: check python-compile go-test help test-policy
 
