@@ -30,3 +30,21 @@ command = "cd ~/CodeProjects/tools/whatsapp-mcp && make check"
 description = "WhatsApp MCP syntax and Go package compilation pass without starting the bridge, MCP server, WhatsApp connection, or message-store reads"
 timeout = 180
 fail_on_stderr = true
+
+[[conventions.exemptions]]
+family = "observability-routing"
+status = "not-applicable"
+source = "appcheck.toml"
+reason = "Operator-invoked tool with no repo-owned scheduled process or proactive background degradation surface; failures return directly to the invoking operator."
+
+# STD-015: minimum function baseline derived from the approved 2026-07-09
+# registry evidence review. Expand during quarterly function-fit review.
+[functions]
+enabled = true
+
+[[functions.items]]
+id = "F1"
+statement = "ensure that MCP clients can search, read, and explicitly send WhatsApp messages through the local bridge"
+consumers = ["operator"]
+kind = "service"
+liveness = "manual"
