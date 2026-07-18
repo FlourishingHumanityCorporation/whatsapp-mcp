@@ -1,0 +1,17 @@
+# First-class automation catalog (ADR-0001, automation-hub).
+# One [[automation]] per scheduled job or service this project owns. Validated
+# by `ahub spec lint`; fleet gaps via `ahub spec coverage`.
+
+schema = 1
+project = "whatsapp-mcp"
+
+[[automation]]
+id = "mcp-whatsapp"
+purpose = "Keep the shared WhatsApp MCP HTTP service (streamable-http, port 9106) available for Claude Code and fleet consumers."
+kind = "service"
+tier = "infrastructure"
+schedule = "service"
+launchd_label = "com.paulrohde.mcp.whatsapp"
+runbook = "README.md"
+# automation-hub's mcp-health probes the shared MCP HTTP services every 30 minutes.
+liveness = "heartbeat"

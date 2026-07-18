@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.paulrohde.mcp.whatsapp</string>
+    <key>ProgramArguments</key>
+    <array>
+        <string>/Users/paulrohde/CodeProjects/tools/whatsapp-mcp/whatsapp-mcp-server/.venv-service/bin/python</string>
+        <string>main.py</string>
+    </array>
+    <key>WorkingDirectory</key>
+    <string>/Users/paulrohde/CodeProjects/tools/whatsapp-mcp/whatsapp-mcp-server</string>
+    <key>EnvironmentVariables</key>
+    <dict>
+        <key>WHATSAPP_MCP_TRANSPORT</key>
+        <string>streamable-http</string>
+        <key>WHATSAPP_MCP_HOST</key>
+        <string>127.0.0.1</string>
+        <key>WHATSAPP_MCP_PORT</key>
+        <string>9106</string>
+        <key>PATH</key>
+        <string>/Users/paulrohde/.local/bin:/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin</string>
+    </dict>
+    <key>RunAtLoad</key>
+    <true/>
+    <key>KeepAlive</key>
+    <true/>
+    <key>ThrottleInterval</key>
+    <integer>10</integer>
+    <key>StandardOutPath</key>
+    <string>/Users/paulrohde/Library/Logs/mcp-whatsapp.log</string>
+    <key>StandardErrorPath</key>
+    <string>/Users/paulrohde/Library/Logs/mcp-whatsapp.log</string>
+</dict>
+</plist>
