@@ -5,7 +5,9 @@ repos:
     rev: v5.0.0
     hooks:
       - id: trailing-whitespace
+        exclude: (^|/)evals/(data|results)/
       - id: end-of-file-fixer
+        exclude: (^|/)evals/(data|results)/
       - id: check-yaml
       - id: check-toml
       - id: check-json
@@ -15,6 +17,7 @@ repos:
       - id: detect-private-key
       - id: mixed-line-ending
         args: [--fix=lf]
+        exclude: (^|/)evals/(data|results)/
       - id: check-case-conflict
   - repo: https://github.com/gitleaks/gitleaks
     rev: v8.30.0
@@ -36,6 +39,13 @@ repos:
         files: ^whatsapp-mcp-server/.*\.py$
         types:
           - python
+        pass_filenames: false
+        require_serial: true
+      - id: silent-degradation-gate
+        name: silent-degradation gate (no new HIGH)
+        entry: bash -c 'exec $HOME/CodeProjects/tools/code-hygiene/.venv/bin/code-hygiene audit silent-degradation --path . --gate --repo-only'
+        language: system
+        files: \.py$
         pass_filenames: false
         require_serial: true
       - id: go-package-compile
