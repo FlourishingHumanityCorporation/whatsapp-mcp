@@ -54,3 +54,13 @@ repos:
         language: system
         files: ^whatsapp-bridge/.*\.go$
         pass_filenames: false
+      - id: architecture-check
+        name: architecture module boundary gate (whatsapp-mcp)
+        entry: make architecture-check
+        language: system
+        files: ^(?:(?:\.pre-commit-config\.yaml|AGENTS\.md|CLAUDE\.md|Makefile|appcheck\.toml|pyproject\.toml|\.appcheck/architecture-baseline\.json|docs/architecture/ARCHITECTURE\.md|whatsapp-bridge|whatsapp-mcp-server|tests|infra|docs|\.appcheck/projects\.json|\.claudeignore|\.gitignore|LICENSE|README\.md|REBUILD\.md|automations\.toml|example-use\.png|\.appcheck|docs/architecture)$|(?:whatsapp-bridge/|whatsapp-mcp-server/|tests/|infra/|docs/))
+        pass_filenames: false
+        require_serial: true
+        stages:
+          - pre-commit
+          - pre-push

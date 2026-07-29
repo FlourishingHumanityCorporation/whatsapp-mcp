@@ -1,6 +1,116 @@
 [app]
 name = "whatsapp-mcp"
 type = "tool"
+required_checks = ["architecture"]
+
+[architecture]
+enabled = true
+required = true
+source_roots = ["whatsapp-bridge", "whatsapp-mcp-server", "tests"]
+resource_roots = ["infra", "docs"]
+resource_files = [
+    ".appcheck/architecture-baseline.json",
+    ".appcheck/projects.json",
+    ".claudeignore",
+    ".gitignore",
+    ".pre-commit-config.yaml",
+    "AGENTS.md",
+    "LICENSE",
+    "Makefile",
+    "README.md",
+    "REBUILD.md",
+    "appcheck.toml",
+    "automations.toml",
+    "example-use.png",
+]
+max_root_files = 7
+script_roots = []
+entry_points = []
+script_max_lines = 500
+baseline_file = ".appcheck/architecture-baseline.json"
+composition_roots = [
+    "whatsapp-bridge/main.go",
+    "whatsapp-mcp-server/main.py",
+]
+
+[[architecture.modules]]
+name = "bridge_runtime"
+paths = ["whatsapp-bridge/main.go"]
+may_depend_on = []
+
+[[architecture.modules]]
+name = "bridge_build"
+paths = ["whatsapp-bridge/go.mod", "whatsapp-bridge/go.sum"]
+may_depend_on = []
+
+[[architecture.modules]]
+name = "server_audio"
+paths = ["whatsapp-mcp-server/audio.py"]
+may_depend_on = []
+
+[[architecture.modules]]
+name = "server_access"
+paths = ["whatsapp-mcp-server/whatsapp.py"]
+may_depend_on = ["server_audio"]
+
+[[architecture.modules]]
+name = "server_delivery"
+paths = ["whatsapp-mcp-server/main.py"]
+may_depend_on = ["server_access"]
+
+[[architecture.modules]]
+name = "server_build"
+paths = [
+    "whatsapp-mcp-server/.gitignore",
+    "whatsapp-mcp-server/.python-version",
+    "whatsapp-mcp-server/pyproject.toml",
+    "whatsapp-mcp-server/uv.lock",
+]
+may_depend_on = []
+
+[[architecture.modules]]
+name = "test_consumers"
+paths = ["tests/**"]
+may_depend_on = [
+    "bridge_runtime",
+    "server_access",
+    "server_audio",
+    "server_delivery",
+]
+
+[[architecture.modules]]
+name = "service_control"
+paths = ["infra/**", "automations.toml"]
+may_depend_on = ["server_delivery"]
+
+[[architecture.modules]]
+name = "project_knowledge"
+paths = [
+    "docs/**",
+    "LICENSE",
+    "README.md",
+    "REBUILD.md",
+    "example-use.png",
+]
+may_depend_on = []
+
+[[architecture.modules]]
+name = "agent_control"
+paths = ["AGENTS.md"]
+may_depend_on = []
+
+[[architecture.modules]]
+name = "build_control"
+paths = [
+    ".appcheck/architecture-baseline.json",
+    ".appcheck/projects.json",
+    ".claudeignore",
+    ".gitignore",
+    ".pre-commit-config.yaml",
+    "Makefile",
+    "appcheck.toml",
+]
+may_depend_on = []
 
 [env]
 required = []
@@ -26,7 +136,7 @@ scan_deprecated_usage = true
 
 [[custom_checks]]
 name = "check"
-command = "cd ~/CodeProjects/tools/whatsapp-mcp && make check"
+command = "make check"
 description = "WhatsApp MCP syntax and Go package compilation pass without starting the bridge, MCP server, WhatsApp connection, or message-store reads"
 timeout = 180
 fail_on_stderr = true

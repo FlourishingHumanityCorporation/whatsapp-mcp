@@ -1,0 +1,235 @@
+{
+  "schema_version": "whatsapp-mcp.std028-verification.v1",
+  "recorded_at": "2026-07-23T15:45:00Z",
+  "registry_key": "whatsapp-mcp",
+  "standard": {
+    "id": "STD-028",
+    "version": "1.36.0"
+  },
+  "architecture_scope": "tools/whatsapp-mcp",
+  "effective_git_root": "tools/whatsapp-mcp",
+  "classification": "substantial",
+  "status": "IN_REVIEW",
+  "review_status": "PENDING_INDEPENDENT_REVIEW",
+  "tested_revision": null,
+  "worktree_identity": {
+    "worktree": "/Users/paulrohde/CodeProjects/.worktrees/whatsapp-mcp-std028-20260723",
+    "branch": "detached",
+    "base_head": "3eeea999f76cea66472b939dfaa3ac2906ad4417",
+    "base_tree": "68754516d6a37a378b352648b596a35ec7a1c59b",
+    "canonical_upstream": "fhc/main",
+    "canonical_upstream_at_identity_capture": "3eeea999f76cea66472b939dfaa3ac2906ad4417",
+    "upstream_ahead": 0,
+    "upstream_behind": 0,
+    "candidate_tree_excluding_adoption_records": "c449bc6d828c8ce8d959c4eac67154a3bb58a18d",
+    "candidate_patch_sha256_excluding_adoption_records": "d7fb80b7dcd501d81732ed55d8307aa1b80460653d8f52641c6ae40b4560d141",
+    "candidate_entries_excluding_adoption_records": 26,
+    "changed_paths_excluding_adoption_records": 8,
+    "added_paths_excluding_adoption_records": 4,
+    "adoption_records_excluded_to_avoid_self_reference": "docs/architecture/adoption/**",
+    "candidate_identity_index": "/tmp/whatsapp-std028-identity.s2dPSc/index",
+    "candidate_identity_index_sha256": "f57678b436ccfdeb58922aac4a3b7b4f3fead3062b4c7c24eed417c6a9b0b5cc",
+    "identity_index_matches_worktree_excluding_adoption_records": true,
+    "real_index_clean_at_identity_capture": true,
+    "primary_checkout_preserved_entries": [
+      ".pre-commit-config.yaml"
+    ],
+    "preserved_live_runtime": true
+  },
+  "artifacts": {
+    "architecture_contract": {
+      "path": "appcheck.toml",
+      "sha256": "5bfaf4e53411b591bb97beaed442d5fe4532da70646c7645acdce6d316dc42b5"
+    },
+    "architecture_document": {
+      "path": "docs/architecture/ARCHITECTURE.md",
+      "sha256": "ec3019b251edddeefed709d3b2827837d9773ce8eaa8e890b3c3991f6053a73e"
+    },
+    "adoption_inventory": {
+      "path": "docs/architecture/adoption/inventory.md",
+      "sha256": "6a98065c59de1eeac089fcba018483650359cbd28e545e0824fe200351c50181"
+    },
+    "contract_review": {
+      "path": "docs/architecture/adoption/contract-review.md",
+      "sha256": "39c0bb4c552102b6353513d9685d07926885872ea85d21d5435247203277c46f",
+      "status": "PENDING_INDEPENDENT_REVIEW"
+    },
+    "quality_review": {
+      "path": "docs/architecture/adoption/quality-review.md",
+      "sha256": "c26baf0ad28d1db9734245ef266efc651cb5d09e05e73c727e5451c0a5ebae23",
+      "status": "PENDING_INDEPENDENT_REVIEW"
+    },
+    "baseline": {
+      "path": ".appcheck/architecture-baseline.json",
+      "sha256": "4705c27acd75cc1a4e0d86f92b11072381cb4adfae82c54b9b5a251086bbbaca",
+      "violations": {
+        "composition-size:whatsapp-bridge/main.go": 1351,
+        "composition-size:whatsapp-mcp-server/main.py": 247
+      }
+    },
+    "local_registry": {
+      "path": ".appcheck/projects.json",
+      "sha256": "d93541bf3d80bdb2a8a165d6699120afd1a5829f0d649bf84c07839de95786a3"
+    },
+    "generated_pre_commit": {
+      "path": ".pre-commit-config.yaml",
+      "sha256": "23b87bd7040161aef189e273a17c0fa8cf4404fbac3c04b2398afd54bb2e8101",
+      "exact_candidate_bound_generator_output": true
+    },
+    "agent_guidance": {
+      "path": "AGENTS.md",
+      "sha256": "8388561a287ff2b274875659c42e3040746e0cabb89b26a16a046b3f116e21ee"
+    },
+    "makefile": {
+      "path": "Makefile",
+      "sha256": "e019ab77450e9c62aaec2a6fde60b1cecf99f171e202497c675e31448471e4a8"
+    },
+    "architecture_regression_tests": {
+      "path": "tests/architecture/unit/test_std028_contract.py",
+      "sha256": "b8fe0139203331ce5d5ddc2ad9b4affd00fc02d97f5fcd2ed093f063e40f9903"
+    },
+    "python_project_metadata": {
+      "path": "whatsapp-mcp-server/pyproject.toml",
+      "sha256": "00a12e528a0d1b64ced42e1e1faa2bc45f8fb01b7a3b42933ff2bb0deb392a14"
+    },
+    "python_lock": {
+      "path": "whatsapp-mcp-server/uv.lock",
+      "sha256": "c7e4b3d817f0543d388fe2be69b8d44a6f1dc6240b675dc1650e961fb371fe23"
+    },
+    "launchagent_source": {
+      "path": "infra/launchd/com.paulrohde.mcp.whatsapp.plist",
+      "sha256": "c45327461acf9318f31c27c39a855967c582f723fa83c5e6f386e7b38d7e638f"
+    },
+    "registry_slice": {
+      "path": ".meta/projects.json",
+      "serialization": "SHA-256 of newline-terminated canonical compact sorted JSON for projects.whatsapp-mcp",
+      "sha256": "1ff0fbc29be8c57357d7dfd9c48a47c06faff06fd92d936c19e7f2f801d878a5"
+    }
+  },
+  "architecture": {
+    "pre_adoption_tracked_files": 22,
+    "post_adoption_entries_excluding_adoption_records": 26,
+    "direct_python_runtime_files": 3,
+    "direct_go_runtime_files": 1,
+    "composition_roots": [
+      "whatsapp-bridge/main.go",
+      "whatsapp-mcp-server/main.py"
+    ],
+    "baseline_count": 2,
+    "flat_root_keys": 0,
+    "ownership_keys": 0,
+    "invalid_configuration_keys": 0,
+    "dependency_keys": 0,
+    "cycle_keys": 0
+  },
+  "checks": [
+    {
+      "command": "make check before adoption",
+      "status": "pass",
+      "result": "Python syntax compilation, Go package compilation, and changed-file policy passed without starting either runtime."
+    },
+    {
+      "command": "focused standard-library architecture contract before implementation",
+      "status": "fail_as_expected",
+      "result": "Architecture was absent from required checks, the architecture table was absent, and the custom Appcheck command jumped to the protected primary checkout."
+    },
+    {
+      "command": "checkout-local architecture with an empty baseline",
+      "status": "fail_as_expected",
+      "result": "Run c32306a7-708d-4264-90b8-375d4b2a0843 found only the pre-adoption 1351-line Go and 247-line Python composition roots."
+    },
+    {
+      "command": "make check after adoption",
+      "status": "pass",
+      "result": "Python syntax compilation, Go package compilation, changed-file policy, four contract tests, and the two-key architecture ratchet passed."
+    },
+    {
+      "command": "first full checkout-local Appcheck",
+      "status": "fail_as_expected",
+      "result": "Run fef48a84-9f14-44f6-8865-04189d5663fd failed only because successful unittest -v progress was written to stderr while the custom check correctly fails on stderr."
+    },
+    {
+      "command": "focused stderr-routing regression before repair",
+      "status": "fail_as_expected",
+      "result": "The contract test proved the unittest command did not route normal progress to stdout."
+    },
+    {
+      "command": "full checkout-local Appcheck after repair",
+      "status": "pass_with_warning",
+      "result": "Run 6753f487-8d58-475a-a689-4606630a7cf8 had zero failures. The only warning is static pytest-marker coverage for the pure standard-library unittest file; unit-path boundary and semantic checks pass."
+    },
+    {
+      "command": "uv lock --check",
+      "status": "pass",
+      "result": "The existing 47-package Python 3.11 lock resolved in check mode without a worktree change."
+    },
+    {
+      "command": "plutil -lint infra/launchd/com.paulrohde.mcp.whatsapp.plist",
+      "status": "pass",
+      "result": "The canonical LaunchAgent source is syntactically valid."
+    },
+    {
+      "command": "candidate-bound generated architecture hook",
+      "status": "pass",
+      "result": "The architecture hook passed through pre-commit at both pre-commit and pre-push stages."
+    },
+    {
+      "command": "git diff --check and real-index inspection",
+      "status": "pass",
+      "result": "No whitespace errors were present and the candidate real index was clean."
+    }
+  ],
+  "final_record_inclusive_proof": {
+    "command": "checkout-local Appcheck architecture after all adoption record paths exist",
+    "status": "pass",
+    "run_id": "12096f53-1a76-4aea-a647-e348922b72d6",
+    "expected_files_scanned": 30,
+    "expected_governed_files": 30,
+    "expected_outside_governance": 0,
+    "baseline_count": 2,
+    "generated_pre_commit_stage": "pass",
+    "generated_pre_push_stage": "pass",
+    "installed_pre_commit": {
+      "status": "absent",
+      "promotion_blocker": true
+    },
+    "installed_pre_push": {
+      "status": "present_unexercised_for_candidate",
+      "type": "symlink",
+      "target": "/Users/paulrohde/.local/share/codeprojects-control-plane/current/hooks/pre-push-shared",
+      "sha256": "908cc3b056ea543de234efe5d4cf7df380a5fcb7283484815b7e2a862e76a11c",
+      "promotion_blocker": true
+    },
+    "real_index_unchanged_and_clean": true,
+    "git_diff_check": "pass"
+  },
+  "excluded_live_proof": {
+    "status": "NOT_RUN_BY_DESIGN",
+    "surfaces": [
+      "Go WhatsApp bridge",
+      "Python MCP server",
+      "LaunchAgent load, unload, kickstart, or restart",
+      "WhatsApp device connection and QR flow",
+      "message and session database contents",
+      "message and media reads, sends, and downloads",
+      "private logs and authenticated session state",
+      "consumer applications, Figma, and browser surfaces"
+    ],
+    "reason": "STD-028 adoption used syntax compilation, Go package compilation, standard-library contract tests, lock and plist validation, architecture, and generated-hook proof. Green candidate checks are not live WhatsApp acceptance."
+  },
+  "shared_control_plane": {
+    "meta_head": "3ad0cd208f4d50df8151421f811b007645eb0203",
+    "meta_publication_state": "unpublished dirty candidate",
+    "methodology_path": "docs/standards/project-module-architecture-adoption-methodology.md",
+    "ledger_path": ".meta/std028-rollout-ledger.json"
+  },
+  "remaining_blockers": [
+    "Independent contract review is pending.",
+    "Independent quality review is pending.",
+    "The installed pre-commit hook is absent.",
+    "The existing installed pre-push hook has not been exercised against this candidate.",
+    "The protected primary generated-hook edit requires deliberate reconciliation.",
+    "Live acceptance requires separate explicit authorization.",
+    "No immutable tested commit exists; no commit or push was made."
+  ]
+}

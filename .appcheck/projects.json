@@ -1,0 +1,13 @@
+{
+  "projects": {
+    "whatsapp-mcp": {
+      "path": ".",
+      "type": "tool",
+      "block": null,
+      "description": "Local checkout binding for repository-native Appcheck validation. Fleet metadata remains authoritative in .meta/projects.json.",
+      "depends": [],
+      "check_command": "make check",
+      "architecture_check_command": "make architecture-check"
+    }
+  }
+}

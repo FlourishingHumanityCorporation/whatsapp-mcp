@@ -63,3 +63,23 @@ Repository in the CodeProjects workspace.
 - Run the narrowest relevant local check after edits.
 - For user-visible behavior, prefer the real UI, CLI, appcheck, logs, or documented proof surface over a shallow green check.
 - If verification cannot run, report the exact blocker and residual risk.
+
+## Architecture placement
+
+- Treat `appcheck.toml` and `docs/architecture/ARCHITECTURE.md` as the
+  normative ownership and dependency contract.
+- Keep Go bridge behavior under `whatsapp-bridge/`; keep FastMCP registration
+  in `whatsapp-mcp-server/main.py`, local store/bridge access in
+  `whatsapp-mcp-server/whatsapp.py`, and audio conversion in
+  `whatsapp-mcp-server/audio.py`.
+- The persisted LaunchAgent invokes `main.py` through an explicit Python
+  interpreter. That path is a non-executable composition root, not a
+  standalone script entry point.
+- Add new behavior to the owning capability. Do not add another direct runtime
+  file, generic utilities folder, or cross-capability import without updating
+  the contract and first proving the intended dependency direction.
+- Do not expand `.appcheck/architecture-baseline.json` to make new debt pass.
+  Reduce the two recorded composition roots through tested extraction.
+- `make check` must remain non-live and checkout-local. Architecture proof must
+  never inspect message stores, start or restart either runtime, or perform a
+  WhatsApp read, send, download, QR, or session action.

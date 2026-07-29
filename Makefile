@@ -1,6 +1,6 @@
 PYTHON ?= $(shell ls $(HOME)/.pyenv/versions/3.1[2-9]*/bin/python3 2>/dev/null | sort -r | head -1 || echo python3)
 
-.PHONY: check python-compile go-test help test-policy
+.PHONY: architecture-check architecture-contract-test check python-compile go-test help test-policy
 
 help:
 	@echo "make check - non-live Python syntax compile and Go package compile"
@@ -16,7 +16,16 @@ test-policy:
 	else \
 		python3 "$$HOME/CodeProjects/.meta/scripts/test-policy-changed-files" --repo "$$repo" $$files; \
 	fi
-check: python-compile go-test test-policy
+
+architecture-contract-test:
+	$(PYTHON) -m unittest discover -s tests/architecture/unit -p 'test_*.py' -v 2>&1
+
+architecture-check:
+	APPCHECK_PROJECTS_JSON="$(CURDIR)/.appcheck/projects.json" \
+	APPCHECK_CODEPROJECTS_ROOT="$(CURDIR)" \
+	appcheck run whatsapp-mcp --category architecture
+
+check: python-compile go-test test-policy architecture-contract-test architecture-check
 	@echo "whatsapp-mcp non-live checks passed"
 
 python-compile:
