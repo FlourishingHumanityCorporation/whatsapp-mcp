@@ -100,8 +100,8 @@ If you're running this project on Windows, be aware that `go-sqlite3` requires *
 
 #### Steps to get it working:
 
-1. **Install a C compiler**  
-   We recommend using [MSYS2](https://www.msys2.org/) to install a C compiler for Windows. After installing MSYS2, make sure to add the `ucrt64\bin` folder to your `PATH`.  
+1. **Install a C compiler**
+   We recommend using [MSYS2](https://www.msys2.org/) to install a C compiler for Windows. After installing MSYS2, make sure to add the `ucrt64\bin` folder to your `PATH`.
    → A step-by-step guide is available [here](https://code.visualstudio.com/docs/cpp/config-mingw).
 
 2. **Enable CGO and run the app**
