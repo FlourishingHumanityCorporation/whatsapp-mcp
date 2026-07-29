@@ -58,17 +58,18 @@ func analyzeOggOpus(data []byte) (duration uint32, waveform []byte, err error) {
 			// Look for "OpusHead" marker in this page
 			pageData := data[i : i+pageSize]
 			headPos := bytes.Index(pageData, []byte("OpusHead"))
-			if headPos >= 0 && headPos+12 < len(pageData) {
+			if headPos >= 0 && headPos+16 <= len(pageData) {
 				// Found OpusHead, extract sample rate and pre-skip
 				// OpusHead format: Magic(8) + Version(1) + Channels(1) + PreSkip(2) + SampleRate(4) + ...
-				headPos += 8 // Skip "OpusHead" marker
-				// PreSkip is 2 bytes at offset 10
-				if headPos+12 <= len(pageData) {
-					preSkip = binary.LittleEndian.Uint16(pageData[headPos+10 : headPos+12])
-					sampleRate = binary.LittleEndian.Uint32(pageData[headPos+12 : headPos+16])
-					foundOpusHead = true
-					fmt.Printf("Found OpusHead: sampleRate=%d, preSkip=%d\n", sampleRate, preSkip)
+				preSkip = binary.LittleEndian.Uint16(pageData[headPos+10 : headPos+12])
+				headerSampleRate := binary.LittleEndian.Uint32(
+					pageData[headPos+12 : headPos+16],
+				)
+				if headerSampleRate > 0 {
+					sampleRate = headerSampleRate
 				}
+				foundOpusHead = true
+				fmt.Printf("Found OpusHead: sampleRate=%d, preSkip=%d\n", sampleRate, preSkip)
 			}
 		}
 

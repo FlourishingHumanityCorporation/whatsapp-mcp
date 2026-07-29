@@ -73,10 +73,10 @@ func downloadMedia(client *whatsmeow.Client, messageStore *MessageStore, message
 
 	if err != nil {
 		// Try to get basic info if extended info isn't available
-		err = messageStore.db.QueryRow(
-			"SELECT media_type, filename FROM messages WHERE id = ? AND chat_jid = ?",
-			messageID, chatJID,
-		).Scan(&mediaType, &filename)
+		mediaType, filename, err = messageStore.GetBasicMediaInfo(
+			messageID,
+			chatJID,
+		)
 
 		if err != nil {
 			return false, "", "", "", fmt.Errorf("failed to find message: %v", err)

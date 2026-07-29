@@ -2,6 +2,7 @@ package bridge
 
 import (
 	"bytes"
+	"encoding/binary"
 	"testing"
 
 	waProto "go.mau.fi/whatsmeow/binary/proto"
@@ -64,6 +65,42 @@ func TestAnalyzeOggOpusRejectsInvalidData(t *testing.T) {
 			duration,
 			waveform,
 		)
+	}
+}
+
+func TestAnalyzeOggOpusReadsOpusHeadAndGranuleDuration(t *testing.T) {
+	const (
+		preSkip       = uint16(312)
+		sampleRate    = uint32(48_000)
+		durationInSec = uint64(2)
+	)
+	data := make([]byte, 47)
+	copy(data[0:4], "OggS")
+	binary.LittleEndian.PutUint64(
+		data[6:14],
+		durationInSec*uint64(sampleRate)+uint64(preSkip),
+	)
+	data[26] = 1
+	data[27] = 19
+	copy(data[28:36], "OpusHead")
+	data[36] = 1
+	data[37] = 1
+	binary.LittleEndian.PutUint16(data[38:40], preSkip)
+	binary.LittleEndian.PutUint32(data[40:44], sampleRate)
+
+	duration, waveform, err := analyzeOggOpus(data)
+	if err != nil {
+		t.Fatalf("analyzeOggOpus() returned an error: %v", err)
+	}
+	if duration != uint32(durationInSec) {
+		t.Fatalf(
+			"analyzeOggOpus() duration = %d, want %d",
+			duration,
+			durationInSec,
+		)
+	}
+	if len(waveform) != 64 {
+		t.Fatalf("analyzeOggOpus() waveform = %d bytes, want 64", len(waveform))
 	}
 }
 

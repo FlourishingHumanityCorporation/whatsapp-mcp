@@ -23,9 +23,15 @@ flowchart LR
     service["Service control"] -. persisted invocation .-> delivery
 
     composition["Go composition"] --> session["Session lifecycle and history"]
+    session --> history["History ingestion"]
     session --> messaging["Message processing"]
     session --> rest["REST delivery"]
     session --> store["Message store"]
+    history --> naming["Chat-name resolution"]
+    history --> messaging
+    history --> store
+    naming --> store
+    messaging --> naming
     messaging --> store
     messaging --> analysis["Audio analysis"]
     rest --> messaging
@@ -36,16 +42,17 @@ flowchart LR
 
 Arrows point from consumer to provider, matching `may_depend_on`. The Python
 delivery root depends inward on local access functions, which depend on audio
-conversion. The Go composition root delegates session lifecycle and history
-handling; session, messaging, REST, media, persistence, and audio analysis each
-have one file-level owner. Service declarations invoke the Python delivery root
-but contain no product behavior.
+conversion. The Go composition root delegates connection lifecycle; history
+ingestion, chat-name resolution, messaging, REST, media, persistence, and audio
+analysis each have one file-level owner. Service declarations invoke the Python
+delivery root but contain no product behavior.
 
 The Go capabilities remain one package because they share existing unexported
 helpers and lifecycle state. Appcheck's Go import analysis cannot observe
-same-package file-to-file calls, so the call graph above is reviewed in this
-document and the exact file ownership and size ratchets are enforced by the
-non-live architecture tests.
+same-package file-to-file calls, so a non-live source-level symbol ratchet
+verifies that every observed capability call is allowed by `may_depend_on` and
+that the declared Go graph is acyclic. The same suite enforces exact file
+ownership, persistence encapsulation, and the per-owner size cap.
 
 ## Physical layout
 
@@ -53,7 +60,9 @@ non-live architecture tests.
 whatsapp-bridge/
 ├── main.go                  # thin Go composition root
 ├── bridge/
-│   ├── bridge.go            # session lifecycle and history sync
+│   ├── bridge.go            # connection lifecycle and event composition
+│   ├── history.go           # history ingestion
+│   ├── naming.go            # chat-name resolution
 │   ├── store.go             # SQLite message persistence
 │   ├── messaging.go         # message send, receive, and media metadata
 │   ├── media.go             # media download implementation
@@ -91,7 +100,9 @@ The human names below match the exact machine-owner names in
 | Machine owner | Responsibility |
 |---|---|
 | `bridge_composition` | Thin Go process composition |
-| `bridge_session` | Client session lifecycle, chat naming, and history sync |
+| `bridge_session` | Client connection lifecycle and event composition |
+| `bridge_history` | History-sync ingestion |
+| `bridge_naming` | Persisted, group, and contact chat-name resolution |
 | `bridge_store` | SQLite message and media-metadata persistence |
 | `bridge_messaging` | Message send, receive, and metadata extraction |
 | `bridge_media` | Media download and direct-path handling |
@@ -130,10 +141,12 @@ source checks are not live WhatsApp acceptance.
 ## Zero-debt ratchet
 
 The former 1,351-line Go implementation owner is now divided at its existing
-capability seams. `main.go` remains a self-contained thin root so the documented
-`go run main.go` invocation still works, while no Go capability owner exceeds
-500 lines. The former 247-line Python root imports the registered MCP instance
-from `tools.py`; `main.py` contains only transport selection and invocation.
+capability seams. `main.go` remains the thin composition root for the documented
+`go run main.go` invocation, while no Go capability owner exceeds 500 lines.
+All SQLite schema knowledge is contained by `bridge_store`, and the declared
+same-package graph is acyclic. The former 247-line Python root imports the
+registered MCP instance from `tools.py`; `main.py` contains only transport
+selection and invocation.
 
 `.appcheck/architecture-baseline.json` is empty. Do not add
 composition-size, invalid-configuration, flat-root, ownership, dependency, or

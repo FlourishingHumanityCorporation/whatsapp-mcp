@@ -85,6 +85,16 @@ func (store *MessageStore) StoreChat(jid, name string, lastMessageTime time.Time
 	return err
 }
 
+// GetStoredChatName returns the persisted display name for a chat.
+func (store *MessageStore) GetStoredChatName(jid string) (string, error) {
+	var name string
+	err := store.db.QueryRow(
+		"SELECT name FROM chats WHERE jid = ?",
+		jid,
+	).Scan(&name)
+	return name, err
+}
+
 // Store a message in the database
 func (store *MessageStore) StoreMessage(id, chatJID, sender, content string, timestamp time.Time, isFromMe bool,
 	mediaType, filename, url string, mediaKey, fileSHA256, fileEncSHA256 []byte, fileLength uint64) error {
@@ -171,4 +181,15 @@ func (store *MessageStore) GetMediaInfo(id, chatJID string) (string, string, str
 	).Scan(&mediaType, &filename, &url, &mediaKey, &fileSHA256, &fileEncSHA256, &fileLength)
 
 	return mediaType, filename, url, mediaKey, fileSHA256, fileEncSHA256, fileLength, err
+}
+
+// GetBasicMediaInfo returns the fields available for legacy rows that do not
+// contain the extended download metadata.
+func (store *MessageStore) GetBasicMediaInfo(id, chatJID string) (string, string, error) {
+	var mediaType, filename string
+	err := store.db.QueryRow(
+		"SELECT media_type, filename FROM messages WHERE id = ? AND chat_jid = ?",
+		id, chatJID,
+	).Scan(&mediaType, &filename)
+	return mediaType, filename, err
 }

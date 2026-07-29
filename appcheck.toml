@@ -37,19 +37,27 @@ composition_roots = [
 [[architecture.modules]]
 name = "bridge_composition"
 paths = ["whatsapp-bridge/main.go"]
-may_depend_on = [
-    "bridge_audio_analysis",
-    "bridge_media",
-    "bridge_messaging",
-    "bridge_rest",
-    "bridge_session",
-    "bridge_store",
-]
+may_depend_on = ["bridge_session"]
 
 [[architecture.modules]]
 name = "bridge_session"
 paths = ["whatsapp-bridge/bridge/bridge.go"]
-may_depend_on = ["bridge_messaging", "bridge_rest", "bridge_store"]
+may_depend_on = [
+    "bridge_history",
+    "bridge_messaging",
+    "bridge_rest",
+    "bridge_store",
+]
+
+[[architecture.modules]]
+name = "bridge_history"
+paths = ["whatsapp-bridge/bridge/history.go"]
+may_depend_on = ["bridge_messaging", "bridge_naming", "bridge_store"]
+
+[[architecture.modules]]
+name = "bridge_naming"
+paths = ["whatsapp-bridge/bridge/naming.go"]
+may_depend_on = ["bridge_store"]
 
 [[architecture.modules]]
 name = "bridge_store"
@@ -59,7 +67,7 @@ may_depend_on = []
 [[architecture.modules]]
 name = "bridge_messaging"
 paths = ["whatsapp-bridge/bridge/messaging.go"]
-may_depend_on = ["bridge_audio_analysis", "bridge_store"]
+may_depend_on = ["bridge_audio_analysis", "bridge_naming", "bridge_store"]
 
 [[architecture.modules]]
 name = "bridge_media"
