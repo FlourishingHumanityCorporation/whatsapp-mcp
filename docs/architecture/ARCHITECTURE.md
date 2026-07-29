@@ -4,7 +4,7 @@ last_updated: 2026-07-28
 ---
 # Architecture: whatsapp-mcp
 
-**Status:** STD-028 v1.37 zero-debt candidate
+**Status:** STD-028 v1.37 zero-debt architecture approved
 
 whatsapp-mcp joins a Go WhatsApp bridge to a Python MCP delivery surface. It
 owns versioned source and service declarations; it does not own the operator's

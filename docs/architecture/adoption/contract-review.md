@@ -1,62 +1,59 @@
 ---
 created: 2026-07-23
 last_updated: 2026-07-28
-candidate_revision: 517578954a257e27d711d228d32401c85f124d8b
-status: PENDING_INDEPENDENT_REVIEW
+candidate_revision: b40403a9af47397c749dd6ee4c48808ba875a43b
+status: APPROVED_PENDING_FINAL_REBIND
 ---
 # STD-028 contract review — whatsapp-mcp
 
 ## Decision
 
-**PENDING — no independent reviewer has approved this candidate.**
+**APPROVED — independent evidence-only review found no blocking architecture
+contract defect at exact corrective revision `b40403a`.**
 
-This implementation-owner self-audit is review input, not independent
-approval.
+The adoption records and approved architecture status are being bound in the
+next revision. That final record-bound revision still requires an exact
+evidence-only rebind before ledger promotion.
 
-## Scope
+## Approved contract
 
-- Exact implementation revision:
-  `517578954a257e27d711d228d32401c85f124d8b`.
-- Architecture scope and Git root: `tools/whatsapp-mcp`.
-- Live bridge or MCP execution, WhatsApp connectivity, message/session stores,
-  QR interaction, media, private logs, and service restarts are excluded.
+- Twenty named owners govern the Go bridge, Python MCP surface, tests, build,
+  service control, project knowledge, and agent controls.
+- Twenty-two allowed edges form an acyclic graph.
+- The Go composition root calls only `bridge.Run`; connection lifecycle
+  dispatches to history, messaging, REST, and store capabilities without a
+  return dependency.
+- History ingestion and message handling both depend inward on independent
+  chat-name resolution; naming depends only on the store.
+- Store APIs exclusively own SQL and the database handle.
+- `whatsapp-bridge/main.go` and `whatsapp-mcp-server/main.py` are the only
+  composition roots.
+- The architecture baseline is empty.
+- Same-package Go calls are checked against `may_depend_on`, the declared graph
+  is checked for cycles, and all Go capability owners are capped at 500 lines.
 
-## Owner self-audit
+## Review history
 
-- Eleven named owners govern all 33 scanned project entries with no overlap or
-  gap.
-- The Go root is a seven-line composition root over the importable `bridge/`
-  runtime package; the documented `go run main.go` command remains valid.
-- The Python root is a 19-line transport selector over the existing tool
-  registration in `tools.py`.
-- The seven declared dependency edges are explicit and acyclic.
-- The two composition roots remain the established Go and Python executable
-  paths, and the interpreter-invoked Python root remains non-executable.
-- The architecture baseline is empty and baseline-history verification passes.
-- The intentional Python root cap is eight: four owned source capabilities and
-  four build/control files.
-- Checkout-local native and generated-hook gates do not start either runtime or
-  inspect private state.
+Independent review rejected exact revision `55d6bf4` because the real Go graph
+contained a hidden messaging-to-session edge and cycles, raw SQL lived outside
+the store owner, lifecycle/history/naming were still mixed, and no check
+verified same-package calls.
 
-## Required reviewer checks
+Corrective revision `b40403a` resolved every blocking finding. The reviewer
+manually reconstructed the actual call graph from the supplied complete Go
+surface, matched each observed dependency to `appcheck.toml`, confirmed a
+topological ordering, confirmed SQL confinement, and confirmed that
+`requestHistorySync` was removed.
 
-1. Confirm the eleven owners represent real reasons to change.
-2. Confirm all seven allowed edges are necessary and no valid edge is omitted.
-3. Confirm the Go package extraction preserves its public launch seam.
-4. Confirm the Python tool extraction preserves tool registration and transport
-   selection.
-5. Confirm the empty baseline hides no root, size, composition, cycle,
-   ownership, or documentation debt.
-6. Confirm the eight-file Python root cap is a truthful boundary rather than an
-   exception disguised as configuration.
+## Evidence boundary
 
-## Current evidence
+- `make check` passed Go tests, eight architecture contract tests, and the
+  checkout-local Appcheck gate.
+- Static Appcheck passed 37 checks, skipped 28 non-applicable checks, warned
+  only on the known standard-library unittest marker, and failed none.
+- Both generated hook stages and the candidate-bound generator check passed.
 
-- `make check` passes Python compilation, both Go packages, test policy, four
-  architecture contract tests, and checkout-local architecture enforcement.
-- Static Appcheck has 36 passes, 29 non-applicable skips, one known unittest
-  marker warning, and no failure.
-- The complete generated pre-commit and pre-push suites pass.
-- Central generator equivalence passes.
-
-The rollout ledger must remain `IN_REVIEW`.
+This approval covers source architecture and non-live characterization. It does
+not cover WhatsApp connectivity, authenticated sessions, local stores, QR
+interaction, message/media mutation, LaunchAgent behavior, or operator
+acceptance.
