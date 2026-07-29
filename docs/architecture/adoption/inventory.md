@@ -7,7 +7,7 @@ status: approved-pending-final-rebind
 # whatsapp-mcp STD-028 adoption inventory
 
 Status: independent contract and quality approval at exact corrective
-implementation revision `b40403a9af47397c749dd6ee4c48808ba875a43b`;
+implementation revision `b40403ae45cfc401619e477479e0a9989c602c69`;
 final record-bound revision review pending.
 
 ## Identity and classification

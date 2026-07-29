@@ -6,7 +6,7 @@
   "architecture_scope": "tools/whatsapp-mcp",
   "effective_git_root": "tools/whatsapp-mcp",
   "status": "IN_REVIEW",
-  "tested_revision": "b40403a9af47397c749dd6ee4c48808ba875a43b",
+  "tested_revision": "b40403ae45cfc401619e477479e0a9989c602c69",
   "publication_revision": null,
   "worktree_identity": {
     "branch": "main",
@@ -41,12 +41,12 @@
     "new_production_dependencies": [],
     "corrective_revisions": [
       {
-        "revision": "55d6bf45d865c2d0e2fc3a729bed0a4127d14480",
+        "revision": "55d6bf4ce0c336dcf4af94fdca7d243f757ed0b2",
         "result": "rejected",
         "reason": "Independent review found an undeclared dependency cycle, raw SQL outside the store owner, a mixed session owner, and no same-package edge enforcement."
       },
       {
-        "revision": "b40403a9af47397c749dd6ee4c48808ba875a43b",
+        "revision": "b40403ae45cfc401619e477479e0a9989c602c69",
         "result": "approved",
         "repair": "Separate lifecycle, history, and naming; encapsulate SQL; remove unreachable history-sync code; enforce source-level edges and cycles; characterize and fix OpusHead parsing."
       }
@@ -184,12 +184,12 @@
     "contract": {
       "path": "docs/architecture/adoption/contract-review.md",
       "status": "APPROVED",
-      "candidate_revision": "b40403a9af47397c749dd6ee4c48808ba875a43b"
+      "candidate_revision": "b40403ae45cfc401619e477479e0a9989c602c69"
     },
     "quality": {
       "path": "docs/architecture/adoption/quality-review.md",
       "status": "APPROVED",
-      "candidate_revision": "b40403a9af47397c749dd6ee4c48808ba875a43b"
+      "candidate_revision": "b40403ae45cfc401619e477479e0a9989c602c69"
     },
     "scope": "Independent review rejected 55d6bf4, then approved the corrected source and contract at b40403a. Exact record-bound revision review remains."
   },

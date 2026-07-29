@@ -1,7 +1,7 @@
 ---
 created: 2026-07-23
 last_updated: 2026-07-28
-candidate_revision: b40403a9af47397c749dd6ee4c48808ba875a43b
+candidate_revision: b40403ae45cfc401619e477479e0a9989c602c69
 status: APPROVED_PENDING_FINAL_REBIND
 ---
 # STD-028 contract review — whatsapp-mcp
