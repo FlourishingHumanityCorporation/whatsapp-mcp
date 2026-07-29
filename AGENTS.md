@@ -55,7 +55,9 @@ Repository in the CodeProjects workspace.
 - `Makefile`
 - `appcheck.toml`
 - `whatsapp-bridge/main.go`
+- `whatsapp-bridge/bridge/bridge.go`
 - `whatsapp-mcp-server/main.py`
+- `whatsapp-mcp-server/tools.py`
 - `whatsapp-mcp-server/whatsapp.py`
 
 ## Verification
@@ -68,8 +70,10 @@ Repository in the CodeProjects workspace.
 
 - Treat `appcheck.toml` and `docs/architecture/ARCHITECTURE.md` as the
   normative ownership and dependency contract.
-- Keep Go bridge behavior under `whatsapp-bridge/`; keep FastMCP registration
-  in `whatsapp-mcp-server/main.py`, local store/bridge access in
+- Keep the Go composition root in `whatsapp-bridge/main.go` and bridge behavior
+  in the importable `whatsapp-bridge/bridge/` package. Keep the Python transport
+  root in `whatsapp-mcp-server/main.py`, FastMCP registration in
+  `whatsapp-mcp-server/tools.py`, local store/bridge access in
   `whatsapp-mcp-server/whatsapp.py`, and audio conversion in
   `whatsapp-mcp-server/audio.py`.
 - The persisted LaunchAgent invokes `main.py` through an explicit Python
@@ -79,7 +83,7 @@ Repository in the CodeProjects workspace.
   file, generic utilities folder, or cross-capability import without updating
   the contract and first proving the intended dependency direction.
 - Do not expand `.appcheck/architecture-baseline.json` to make new debt pass.
-  Reduce the two recorded composition roots through tested extraction.
+  The baseline is empty; preserve the zero-debt ratchet.
 - `make check` must remain non-live and checkout-local. Architecture proof must
   never inspect message stores, start or restart either runtime, or perform a
   WhatsApp read, send, download, QR, or session action.

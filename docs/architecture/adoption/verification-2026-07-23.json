@@ -1,5 +1,6 @@
 {
   "schema_version": "whatsapp-mcp.std028-verification.v1",
+  "historical_record": true,
   "recorded_at": "2026-07-23T15:45:00Z",
   "registry_key": "whatsapp-mcp",
   "standard": {

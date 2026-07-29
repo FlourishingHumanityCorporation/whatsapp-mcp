@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 import stat
 import tomllib
 import unittest
@@ -48,12 +49,13 @@ class ArchitectureContractTests(unittest.TestCase):
         self.assertFalse(python_root.stat().st_mode & stat.S_IXUSR)
 
     def test_runtime_source_roots_remain_small_and_explicit(self) -> None:
+        self.assertEqual(self.config["architecture"]["max_root_files"], 8)
         self.assertEqual(
             {
                 path.name
                 for path in (PROJECT_ROOT / "whatsapp-mcp-server").glob("*.py")
             },
-            {"audio.py", "main.py", "whatsapp.py"},
+            {"audio.py", "main.py", "tools.py", "whatsapp.py"},
         )
         self.assertEqual(
             {
@@ -62,6 +64,25 @@ class ArchitectureContractTests(unittest.TestCase):
             },
             {"main.go"},
         )
+        self.assertEqual(
+            {
+                path.name
+                for path in (PROJECT_ROOT / "whatsapp-bridge" / "bridge").glob("*.go")
+            },
+            {"bridge.go"},
+        )
+        self.assertLessEqual(
+            len((PROJECT_ROOT / "whatsapp-bridge" / "main.go").read_text().splitlines()),
+            200,
+        )
+        self.assertLessEqual(
+            len((PROJECT_ROOT / "whatsapp-mcp-server" / "main.py").read_text().splitlines()),
+            200,
+        )
+        baseline = json.loads(
+            (PROJECT_ROOT / ".appcheck" / "architecture-baseline.json").read_text()
+        )
+        self.assertEqual(baseline["violations"], {})
 
     def test_appcheck_validates_the_active_checkout(self) -> None:
         commands = {

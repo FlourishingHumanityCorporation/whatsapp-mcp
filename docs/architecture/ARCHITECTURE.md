@@ -4,7 +4,7 @@ last_updated: 2026-07-23
 ---
 # Architecture: whatsapp-mcp
 
-**Status:** STD-028 candidate
+**Status:** STD-028 v1.37 zero-debt candidate
 
 whatsapp-mcp joins a Go WhatsApp bridge to a Python MCP delivery surface. It
 owns versioned source and service declarations; it does not own the operator's
@@ -33,12 +33,15 @@ no product behavior.
 
 ```text
 whatsapp-bridge/
-├── main.go                  # Go bridge composition root
+├── main.go                  # thin Go composition root
+├── bridge/
+│   └── bridge.go            # importable Go bridge runtime package
 ├── go.mod
 └── go.sum
 
 whatsapp-mcp-server/
-├── main.py                  # FastMCP composition root
+├── main.py                  # thin FastMCP transport composition root
+├── tools.py                 # MCP instance and tool registration
 ├── whatsapp.py              # local store and bridge access
 ├── audio.py                 # ffmpeg conversion boundary
 ├── pyproject.toml
@@ -50,9 +53,11 @@ docs/architecture/           # ownership and adoption evidence
 ```
 
 The two runtime roots remain separate because they have different languages,
-processes, and responsibilities. The three Python files are established
-capabilities, not an undifferentiated script pile; creating one-file folders
-would add navigation without clearer ownership.
+processes, and responsibilities. The four direct Python source files are
+established capabilities beside four build/control files, not an
+undifferentiated script pile. The configured eight-file root cap describes that
+intentional surface exactly; creating one-file folders would add navigation
+without clearer ownership.
 
 ## Named owner map
 
@@ -61,11 +66,11 @@ The human names below match the exact machine-owner names in
 
 | Machine owner | Responsibility |
 |---|---|
-| `bridge_runtime` | Go bridge composition and runtime behavior |
+| `bridge_runtime` | Thin Go composition plus bridge runtime implementation |
 | `bridge_build` | Go module and dependency lock |
 | `server_audio` | Audio conversion boundary |
 | `server_access` | Local store access and bridge client |
-| `server_delivery` | FastMCP registration and transport selection |
+| `server_delivery` | FastMCP tool registration and thin transport selection |
 | `server_build` | Nested Python environment and dependency lock |
 | `test_consumers` | Non-live architecture and behavior regressions |
 | `service_control` | Persisted LaunchAgent and automation declaration |
@@ -91,27 +96,25 @@ importing it, compiles the Go package through `go test`, runs the pure
 architecture contract tests, and invokes checkout-local Appcheck. Green
 source checks are not live WhatsApp acceptance.
 
-## Ratcheted debt
+## Zero-debt ratchet
 
-The pre-adoption Go composition root is 1,351 lines and the Python MCP
-composition root is 247 lines. The architecture baseline may contain only
-their exact non-growing composition-size keys.
+The pre-adoption 1,351-line Go composition root now delegates to `bridge.Run()`
+in the importable `bridge/` package; `main.go` remains a self-contained thin
+root so the documented `go run main.go` invocation still works. The former
+247-line Python root now imports the registered MCP instance from `tools.py`;
+`main.py` contains only transport selection and invocation.
 
-Remove the Go key by extracting storage, event handling, HTTP delivery, media,
-and WhatsApp client coordination behind explicit packages while retaining one
-thin `main`. Remove the Python key by moving tool implementations and runtime
-selection behind a thin FastMCP registration root. These extractions require
-focused non-live behavior tests before moves and separate authorized live
-acceptance afterward.
-
-Do not add invalid-configuration, flat-root, ownership, dependency, or cycle
-exceptions. Do not treat a live service as permission to defer enforcement.
+`.appcheck/architecture-baseline.json` is empty. Do not add
+composition-size, invalid-configuration, flat-root, ownership, dependency, or
+cycle exceptions. Further decomposition of the large implementation files
+should follow real independently changing capabilities and focused non-live
+behavior tests, not a folder-depth quota.
 
 ## Enforcement
 
 `make architecture-check` runs checkout-local Appcheck. `make check` includes
-the focused contract test and the architecture ratchet alongside the existing
-Python and Go compilation checks.
+the focused contract test and the zero-debt architecture ratchet alongside
+the existing Python and Go compilation checks.
 
 When a boundary changes, update this document and `appcheck.toml`, add a
 failing non-live test first, and run the focused architecture, native,

@@ -15,6 +15,7 @@ resource_files = [
     ".gitignore",
     ".pre-commit-config.yaml",
     "AGENTS.md",
+    "CLAUDE.md",
     "LICENSE",
     "Makefile",
     "README.md",
@@ -23,7 +24,7 @@ resource_files = [
     "automations.toml",
     "example-use.png",
 ]
-max_root_files = 7
+max_root_files = 8
 script_roots = []
 entry_points = []
 script_max_lines = 500
@@ -35,7 +36,7 @@ composition_roots = [
 
 [[architecture.modules]]
 name = "bridge_runtime"
-paths = ["whatsapp-bridge/main.go"]
+paths = ["whatsapp-bridge/bridge/**", "whatsapp-bridge/main.go"]
 may_depend_on = []
 
 [[architecture.modules]]
@@ -55,7 +56,7 @@ may_depend_on = ["server_audio"]
 
 [[architecture.modules]]
 name = "server_delivery"
-paths = ["whatsapp-mcp-server/main.py"]
+paths = ["whatsapp-mcp-server/main.py", "whatsapp-mcp-server/tools.py"]
 may_depend_on = ["server_access"]
 
 [[architecture.modules]]
@@ -96,7 +97,7 @@ may_depend_on = []
 
 [[architecture.modules]]
 name = "agent_control"
-paths = ["AGENTS.md"]
+paths = ["AGENTS.md", "CLAUDE.md"]
 may_depend_on = []
 
 [[architecture.modules]]

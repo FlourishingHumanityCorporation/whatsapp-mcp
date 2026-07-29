@@ -1,6 +1,3 @@
 {
-  "violations": {
-    "composition-size:whatsapp-bridge/main.go": 1351,
-    "composition-size:whatsapp-mcp-server/main.py": 247
-  }
+  "violations": {}
 }

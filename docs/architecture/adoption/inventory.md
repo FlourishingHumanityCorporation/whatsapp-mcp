@@ -133,3 +133,24 @@ Green source and metadata evidence is not live WhatsApp acceptance.
 - Live acceptance would require separate explicit authorization and cannot be
   inferred from these non-live checks.
 - The candidate has no immutable tested commit. No commit or push was made.
+
+## 2026-07-28 corrective reconciliation
+
+The prepared candidate was rebased onto current `main`, including the
+generated `CLAUDE.md` adapter. The original two-key composition-size baseline
+was not accepted for fleet rollout.
+
+The Go runtime was mechanically separated into a thin `main.go` composition
+root and the existing implementation in the importable `bridge/` package. The
+documented `go run main.go` invocation therefore remains valid. The Python
+delivery surface was separated into a 19-line `main.py` transport root and the
+existing registered tools in `tools.py`. Public executable paths, MCP tool
+names, environment variables, Go module identity, LaunchAgent source, and live
+process state remain unchanged.
+
+The architecture baseline is now empty. Non-live Python compilation, Go
+package compilation, the focused architecture regressions, and Appcheck are
+the required proof; the running WhatsApp bridge and MCP server remain outside
+this rollout and were not restarted or exercised. The Python runtime root cap
+is eight: four explicitly owned source capabilities and four build/control
+files, with no baseline exception.
