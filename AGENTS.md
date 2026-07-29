@@ -87,3 +87,5 @@ Repository in the CodeProjects workspace.
 - `make check` must remain non-live and checkout-local. Architecture proof must
   never inspect message stores, start or restart either runtime, or perform a
   WhatsApp read, send, download, QR, or session action.
+- Run `make architecture-check` during architecture edits and `make check`
+  before handoff; generated hooks are additional enforcement, not substitutes.

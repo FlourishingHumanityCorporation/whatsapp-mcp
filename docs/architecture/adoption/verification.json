@@ -1,0 +1,201 @@
+{
+  "schema_version": "whatsapp-mcp.std028-verification.v2",
+  "recorded_at": "2026-07-29T04:52:46Z",
+  "registry_key": "whatsapp-mcp",
+  "standard_version": "1.37.0",
+  "architecture_scope": "tools/whatsapp-mcp",
+  "effective_git_root": "tools/whatsapp-mcp",
+  "status": "IN_REVIEW",
+  "tested_revision": "517578954a257e27d711d228d32401c85f124d8b",
+  "publication_revision": null,
+  "worktree_identity": {
+    "branch": "main",
+    "base_revision": "5f6597f951a12c14025e4f46d53ff19224ed60e5",
+    "implementation_tree": "92f07e99468ec24981dda318eb08bd5908a2f0a9",
+    "upstream_ahead": 3,
+    "upstream_behind": 0,
+    "implementation_worktree_clean_at_test": true
+  },
+  "classification": {
+    "result": "SUBSTANTIAL",
+    "reason": "The operator service owns a Go WhatsApp bridge, Python MCP delivery, local access and audio capabilities, persisted service control, two runtime composition roots, and explicit live/private-data boundaries."
+  },
+  "architecture_decisions": {
+    "declared_modules": 11,
+    "declared_allowed_edges": 7,
+    "declared_graph_acyclic": true,
+    "dependency_cycles_baselined": false,
+    "composition_roots": [
+      "whatsapp-bridge/main.go",
+      "whatsapp-mcp-server/main.py"
+    ],
+    "baseline_values": {},
+    "baseline_policy": "The ownership graph is zero-debt. Invalid declarations, cycles, owner gaps, multiple owners, undocumented modules, and new or grown root, size, or composition debt cannot enter the baseline.",
+    "python_root_cap": {
+      "value": 8,
+      "reason": "Four explicitly owned source capabilities and four build/control files form the established source-launched Python root."
+    }
+  },
+  "production_change": {
+    "source_restructured": true,
+    "behavior_changed": false,
+    "go_seam": "whatsapp-bridge/main.go remains the documented seven-line launch root over whatsapp-client/bridge.",
+    "python_seam": "whatsapp-mcp-server/main.py remains the 19-line transport root over the existing FastMCP registrations in tools.py.",
+    "new_production_dependencies": []
+  },
+  "artifacts": {
+    "architecture_contract": {
+      "path": "appcheck.toml",
+      "sha256": "242732053bc62141e916dbbd76584782b324cfb9235a8b165ab78bdcad5b1d71"
+    },
+    "architecture_document": {
+      "path": "docs/architecture/ARCHITECTURE.md",
+      "sha256": "c49d02cece623a49d1b6dd3e14f2953583dfe915e9483fb55d03bcde7e856d99"
+    },
+    "baseline": {
+      "path": ".appcheck/architecture-baseline.json",
+      "sha256": "ed5897ccea9ebd903493fa0175d3d86fc3fb67bc4b623b19f17f60dd829882e9"
+    },
+    "worktree_binding": {
+      "path": ".appcheck/projects.json",
+      "sha256": "d93541bf3d80bdb2a8a165d6699120afd1a5829f0d649bf84c07839de95786a3"
+    },
+    "generated_pre_commit": {
+      "path": ".pre-commit-config.yaml",
+      "sha256": "b251c1fda8ef2daabb5680f0fd49a02ebe4858e1700425cbcadccc328567af5d",
+      "generator_candidate_revision": "337fddbd6b58aa7beb1efbf4a19baa5841bd33ca"
+    },
+    "agent_guidance": {
+      "path": "AGENTS.md",
+      "sha256": "89332108f098325b70ded53a6e4d87ce659f313fa4e4c1f62ab76612d724a56c"
+    },
+    "claude_adapter": {
+      "path": "CLAUDE.md",
+      "sha256": "9acfc36e6a8df480ea46565c804cfc840b20e1b9e8b2013b741fb6079c00572b"
+    },
+    "native_gate": {
+      "path": "Makefile",
+      "sha256": "e019ab77450e9c62aaec2a6fde60b1cecf99f171e202497c675e31448471e4a8"
+    },
+    "rebuild_guide": {
+      "path": "REBUILD.md",
+      "sha256": "86189ad3e582bb7d8fd05b270566ecebff288bff89d12d7026bc010a471d42f9"
+    },
+    "architecture_regression": {
+      "path": "tests/architecture/unit/test_std028_contract.py",
+      "sha256": "0f0d5e95fae1f837456338c7b5def2e2021c9b38e7b0194ecf2bb031bdca0f72"
+    },
+    "go_composition_root": {
+      "path": "whatsapp-bridge/main.go",
+      "sha256": "fcb68bb4219bd5cf0dd3344887b2576979fb605b4b7b4b1d0e72928e22180f3e"
+    },
+    "go_runtime_package": {
+      "path": "whatsapp-bridge/bridge/bridge.go",
+      "sha256": "3a82433bc50df21d4bc6bb2b16671d25c00e56b6c7937dff0a32815eef33a27f"
+    },
+    "python_composition_root": {
+      "path": "whatsapp-mcp-server/main.py",
+      "sha256": "095d783af9d0bdcc97481b7442ce688ac313e93628e0c2a7c4edb9111ca2389a"
+    },
+    "python_tool_registration": {
+      "path": "whatsapp-mcp-server/tools.py",
+      "sha256": "85fcf570fd835836fcf3196dcd2969d0dffa8831350d98cc64aaa0467a2d76c3"
+    }
+  },
+  "architecture_result": {
+    "status": "pass",
+    "run_id": "fc524b23-6a6c-4200-a2dc-0de753b0559f",
+    "message": "Architecture violations match the baseline ratchet",
+    "files_scanned": 33,
+    "governed_files": 33,
+    "outside_governance": 0,
+    "baseline_count": 0,
+    "new_violations": 0,
+    "grown_violations": 0,
+    "stale_baseline_keys": 0,
+    "baseline_history_verified": true
+  },
+  "checks": [
+    {
+      "command": "make check",
+      "status": "pass",
+      "result": "Python syntax compilation, both Go packages, changed-file test policy, four deterministic contract tests, and the checkout-bound architecture gate passed."
+    },
+    {
+      "command": "appcheck run whatsapp-mcp --profile static",
+      "status": "pass_with_warning",
+      "result": "36 checks passed, 29 non-applicable checks skipped, one standard-library unittest marker check warned, and none failed."
+    },
+    {
+      "command": "pre-commit run --all-files",
+      "status": "pass",
+      "result": "Every generated pre-commit hook passed."
+    },
+    {
+      "command": "pre-commit run --hook-stage pre-push --all-files",
+      "status": "pass",
+      "result": "The complete generated pre-push stage passed, including the registered architecture command."
+    },
+    {
+      "command": "sync-pre-commit-configs --check --project whatsapp-mcp",
+      "status": "pass",
+      "result": "The project config exactly matches generator candidate revision 337fddb."
+    },
+    {
+      "command": "std028_adoption_status.py --format json from generator candidate revision 337fddb",
+      "status": "pass",
+      "result": "The project is surface-complete with contract_state adopted-required and no missing surfaces."
+    },
+    {
+      "command": "git diff --check",
+      "status": "pass",
+      "result": "No whitespace errors."
+    }
+  ],
+  "installed_hooks": {
+    "pre_commit_path": ".git/hooks/pre-commit",
+    "pre_commit_present": true,
+    "pre_commit_sha256": "54ab74751a90ec9f9c4daa9d9e163e14726e4180df4187b045737005cce0d8a8",
+    "pre_push_link": "/Users/paulrohde/.local/share/codeprojects-control-plane/current/hooks/pre-push-composite",
+    "pre_push_resolved_revision": "812fdd7951c0b18c2070c939d6bfe83c829928b1",
+    "pre_push_sha256": "68e9e53bfd14b2256374af7eb99cdc221f6ac0279039a9f89f683a3b73bf0a58",
+    "generated_config_executed": true,
+    "installed_pre_push_execution": "PENDING_PUBLICATION"
+  },
+  "publication_proof": {
+    "status": "PENDING_PUBLICATION",
+    "remote": "origin",
+    "branch": "main",
+    "implementation_revision_reachable_from_published_revision": null
+  },
+  "independent_reviews": {
+    "contract": {
+      "path": "docs/architecture/adoption/contract-review.md",
+      "status": "PENDING_INDEPENDENT_REVIEW"
+    },
+    "quality": {
+      "path": "docs/architecture/adoption/quality-review.md",
+      "status": "PENDING_INDEPENDENT_REVIEW"
+    },
+    "scope": "The implementation-owner assessments are review input, not independent approval of exact revision 5175789."
+  },
+  "static_warning": {
+    "check": "testing:markers",
+    "reason": "The one architecture regression file uses standard-library unittest and therefore has no pytest marker."
+  },
+  "live_boundaries": {
+    "go_bridge_executed": false,
+    "python_mcp_server_executed": false,
+    "whatsapp_connected_or_reconnected": false,
+    "message_or_session_store_read": false,
+    "message_or_media_sent": false,
+    "media_downloaded": false,
+    "qr_displayed_or_scanned": false,
+    "runtime_processes_signaled": false,
+    "private_logs_read": false
+  },
+  "blockers": [
+    "Independent contract and quality reviews have not been performed for exact implementation revision 5175789, so the rollout ledger must remain IN_REVIEW rather than CONFORMANT."
+  ],
+  "next_action": "Publish the evidence revision, retain IN_REVIEW, and await exact-revision independent contract and quality reviews."
+}
