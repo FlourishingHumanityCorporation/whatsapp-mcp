@@ -1,6 +1,6 @@
 ---
 created: 2026-07-23
-last_updated: 2026-07-23
+last_updated: 2026-07-28
 ---
 # Architecture: whatsapp-mcp
 
@@ -18,16 +18,34 @@ The machine-readable ownership and dependency contract in
 
 ```mermaid
 flowchart LR
-    audio["Audio conversion"] --> access["Local access and bridge client"]
-    access --> delivery["MCP delivery"]
-    delivery -. persisted invocation .-> service["Service control"]
-    bridge["Go bridge runtime"]
+    delivery["MCP delivery"] --> access["Local access and bridge client"]
+    access --> audio["Audio conversion"]
+    service["Service control"] -. persisted invocation .-> delivery
+
+    composition["Go composition"] --> session["Session lifecycle and history"]
+    session --> messaging["Message processing"]
+    session --> rest["REST delivery"]
+    session --> store["Message store"]
+    messaging --> store
+    messaging --> analysis["Audio analysis"]
+    rest --> messaging
+    rest --> media["Media download"]
+    rest --> store
+    media --> store
 ```
 
-The Python delivery root depends inward on local access functions, which
-depend on audio conversion. The Go bridge is a separately built runtime
-component. Service declarations invoke the Python delivery root but contain
-no product behavior.
+Arrows point from consumer to provider, matching `may_depend_on`. The Python
+delivery root depends inward on local access functions, which depend on audio
+conversion. The Go composition root delegates session lifecycle and history
+handling; session, messaging, REST, media, persistence, and audio analysis each
+have one file-level owner. Service declarations invoke the Python delivery root
+but contain no product behavior.
+
+The Go capabilities remain one package because they share existing unexported
+helpers and lifecycle state. Appcheck's Go import analysis cannot observe
+same-package file-to-file calls, so the call graph above is reviewed in this
+document and the exact file ownership and size ratchets are enforced by the
+non-live architecture tests.
 
 ## Physical layout
 
@@ -35,7 +53,13 @@ no product behavior.
 whatsapp-bridge/
 ├── main.go                  # thin Go composition root
 ├── bridge/
-│   └── bridge.go            # importable Go bridge runtime package
+│   ├── bridge.go            # session lifecycle and history sync
+│   ├── store.go             # SQLite message persistence
+│   ├── messaging.go         # message send, receive, and media metadata
+│   ├── media.go             # media download implementation
+│   ├── rest.go              # local REST request and response surface
+│   ├── audio_analysis.go    # pure Ogg/Opus and waveform helpers
+│   └── pure_helpers_test.go # non-live Go behavior characterization
 ├── go.mod
 └── go.sum
 
@@ -66,13 +90,20 @@ The human names below match the exact machine-owner names in
 
 | Machine owner | Responsibility |
 |---|---|
-| `bridge_runtime` | Thin Go composition plus bridge runtime implementation |
+| `bridge_composition` | Thin Go process composition |
+| `bridge_session` | Client session lifecycle, chat naming, and history sync |
+| `bridge_store` | SQLite message and media-metadata persistence |
+| `bridge_messaging` | Message send, receive, and metadata extraction |
+| `bridge_media` | Media download and direct-path handling |
+| `bridge_rest` | Local REST request and response delivery |
+| `bridge_audio_analysis` | Pure Ogg/Opus analysis and waveform generation |
+| `bridge_test_consumers` | Non-live Go behavior characterization |
 | `bridge_build` | Go module and dependency lock |
 | `server_audio` | Audio conversion boundary |
 | `server_access` | Local store access and bridge client |
 | `server_delivery` | FastMCP tool registration and thin transport selection |
 | `server_build` | Nested Python environment and dependency lock |
-| `test_consumers` | Non-live architecture and behavior regressions |
+| `test_consumers` | Checkout-local architecture-contract regressions |
 | `service_control` | Persisted LaunchAgent and automation declaration |
 | `project_knowledge` | Architecture and adoption documentation |
 | `agent_control` | Repository-local coding-agent placement rules |
@@ -98,17 +129,16 @@ source checks are not live WhatsApp acceptance.
 
 ## Zero-debt ratchet
 
-The pre-adoption 1,351-line Go composition root now delegates to `bridge.Run()`
-in the importable `bridge/` package; `main.go` remains a self-contained thin
-root so the documented `go run main.go` invocation still works. The former
-247-line Python root now imports the registered MCP instance from `tools.py`;
-`main.py` contains only transport selection and invocation.
+The former 1,351-line Go implementation owner is now divided at its existing
+capability seams. `main.go` remains a self-contained thin root so the documented
+`go run main.go` invocation still works, while no Go capability owner exceeds
+500 lines. The former 247-line Python root imports the registered MCP instance
+from `tools.py`; `main.py` contains only transport selection and invocation.
 
 `.appcheck/architecture-baseline.json` is empty. Do not add
 composition-size, invalid-configuration, flat-root, ownership, dependency, or
-cycle exceptions. Further decomposition of the large implementation files
-should follow real independently changing capabilities and focused non-live
-behavior tests, not a folder-depth quota.
+cycle exceptions. Further decomposition should follow independently changing
+capabilities and focused non-live behavior evidence, not a folder-depth quota.
 
 ## Enforcement
 

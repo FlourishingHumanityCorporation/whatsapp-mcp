@@ -35,9 +35,55 @@ composition_roots = [
 ]
 
 [[architecture.modules]]
-name = "bridge_runtime"
-paths = ["whatsapp-bridge/bridge/**", "whatsapp-bridge/main.go"]
+name = "bridge_composition"
+paths = ["whatsapp-bridge/main.go"]
+may_depend_on = [
+    "bridge_audio_analysis",
+    "bridge_media",
+    "bridge_messaging",
+    "bridge_rest",
+    "bridge_session",
+    "bridge_store",
+]
+
+[[architecture.modules]]
+name = "bridge_session"
+paths = ["whatsapp-bridge/bridge/bridge.go"]
+may_depend_on = ["bridge_messaging", "bridge_rest", "bridge_store"]
+
+[[architecture.modules]]
+name = "bridge_store"
+paths = ["whatsapp-bridge/bridge/store.go"]
 may_depend_on = []
+
+[[architecture.modules]]
+name = "bridge_messaging"
+paths = ["whatsapp-bridge/bridge/messaging.go"]
+may_depend_on = ["bridge_audio_analysis", "bridge_store"]
+
+[[architecture.modules]]
+name = "bridge_media"
+paths = ["whatsapp-bridge/bridge/media.go"]
+may_depend_on = ["bridge_store"]
+
+[[architecture.modules]]
+name = "bridge_rest"
+paths = ["whatsapp-bridge/bridge/rest.go"]
+may_depend_on = ["bridge_media", "bridge_messaging", "bridge_store"]
+
+[[architecture.modules]]
+name = "bridge_audio_analysis"
+paths = ["whatsapp-bridge/bridge/audio_analysis.go"]
+may_depend_on = []
+
+[[architecture.modules]]
+name = "bridge_test_consumers"
+paths = ["whatsapp-bridge/bridge/*_test.go"]
+may_depend_on = [
+    "bridge_audio_analysis",
+    "bridge_media",
+    "bridge_messaging",
+]
 
 [[architecture.modules]]
 name = "bridge_build"
@@ -72,12 +118,7 @@ may_depend_on = []
 [[architecture.modules]]
 name = "test_consumers"
 paths = ["tests/**"]
-may_depend_on = [
-    "bridge_runtime",
-    "server_access",
-    "server_audio",
-    "server_delivery",
-]
+may_depend_on = []
 
 [[architecture.modules]]
 name = "service_control"
