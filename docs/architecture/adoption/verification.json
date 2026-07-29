@@ -7,7 +7,7 @@
   "effective_git_root": "tools/whatsapp-mcp",
   "status": "IN_REVIEW",
   "tested_revision": "517578954a257e27d711d228d32401c85f124d8b",
-  "publication_revision": null,
+  "publication_revision": "c2875c51566b763b540586e43f48f987b0ad464a",
   "worktree_identity": {
     "branch": "main",
     "base_revision": "5f6597f951a12c14025e4f46d53ff19224ed60e5",
@@ -160,13 +160,17 @@
     "pre_push_resolved_revision": "812fdd7951c0b18c2070c939d6bfe83c829928b1",
     "pre_push_sha256": "68e9e53bfd14b2256374af7eb99cdc221f6ac0279039a9f89f683a3b73bf0a58",
     "generated_config_executed": true,
-    "installed_pre_push_execution": "PENDING_PUBLICATION"
+    "installed_pre_push_execution": "pass"
   },
   "publication_proof": {
-    "status": "PENDING_PUBLICATION",
+    "status": "pass",
     "remote": "origin",
     "branch": "main",
-    "implementation_revision_reachable_from_published_revision": null
+    "published_revision": "c2875c51566b763b540586e43f48f987b0ad464a",
+    "verified_at": "2026-07-29T04:54:42Z",
+    "implementation_revision_reachable_from_published_revision": true,
+    "repository_pre_push_hooks": "pass",
+    "focused_commit_check": "pass"
   },
   "independent_reviews": {
     "contract": {
@@ -197,5 +201,5 @@
   "blockers": [
     "Independent contract and quality reviews have not been performed for exact implementation revision 5175789, so the rollout ledger must remain IN_REVIEW rather than CONFORMANT."
   ],
-  "next_action": "Publish the evidence revision, retain IN_REVIEW, and await exact-revision independent contract and quality reviews."
+  "next_action": "Retain IN_REVIEW until exact-revision independent contract and quality reviews exist."
 }
