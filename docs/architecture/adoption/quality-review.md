@@ -1,8 +1,8 @@
 ---
 created: 2026-07-23
 last_updated: 2026-07-28
-candidate_revision: b40403ae45cfc401619e477479e0a9989c602c69
-status: APPROVED_PENDING_FINAL_REBIND
+candidate_revision: 83a7a5184a59fe2fc14c84035fde089e769edefa
+status: APPROVED
 ---
 # STD-028 quality review — whatsapp-mcp
 
@@ -10,9 +10,12 @@ status: APPROVED_PENDING_FINAL_REBIND
 
 **APPROVED — independent evidence-only review found the corrective
 implementation quality sufficient for zero-debt STD-028 adoption at exact
-revision `b40403a`.**
+record-bound revision `83a7a51`.**
 
-Final ledger promotion waits for an exact review of the record-bound revision.
+The implementation was first approved at
+`b40403ae45cfc401619e477479e0a9989c602c69`. Final rebind approved
+`83a7a5184a59fe2fc14c84035fde089e769edefa` after confirming that the later
+delta changes only architecture approval status and durable records.
 
 ## Independent quality findings
 

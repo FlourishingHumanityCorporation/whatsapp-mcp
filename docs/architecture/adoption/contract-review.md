@@ -1,19 +1,20 @@
 ---
 created: 2026-07-23
 last_updated: 2026-07-28
-candidate_revision: b40403ae45cfc401619e477479e0a9989c602c69
-status: APPROVED_PENDING_FINAL_REBIND
+candidate_revision: 83a7a5184a59fe2fc14c84035fde089e769edefa
+status: APPROVED
 ---
 # STD-028 contract review — whatsapp-mcp
 
 ## Decision
 
 **APPROVED — independent evidence-only review found no blocking architecture
-contract defect at exact corrective revision `b40403a`.**
+contract defect at exact record-bound revision `83a7a51`.**
 
-The adoption records and approved architecture status are being bound in the
-next revision. That final record-bound revision still requires an exact
-evidence-only rebind before ledger promotion.
+The source and contract were first approved at corrective revision
+`b40403ae45cfc401619e477479e0a9989c602c69`. Final rebind approved
+`83a7a5184a59fe2fc14c84035fde089e769edefa`, whose only delta is the
+architecture approval line and durable adoption records.
 
 ## Approved contract
 

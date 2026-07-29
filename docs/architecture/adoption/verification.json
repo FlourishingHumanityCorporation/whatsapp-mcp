@@ -1,19 +1,22 @@
 {
   "schema_version": "whatsapp-mcp.std028-verification.v3",
-  "recorded_at": "2026-07-29T17:00:00Z",
+  "recorded_at": "2026-07-29T17:02:08Z",
   "registry_key": "whatsapp-mcp",
   "standard_version": "1.37.0",
   "architecture_scope": "tools/whatsapp-mcp",
   "effective_git_root": "tools/whatsapp-mcp",
-  "status": "IN_REVIEW",
-  "tested_revision": "b40403ae45cfc401619e477479e0a9989c602c69",
-  "publication_revision": null,
+  "status": "CONFORMANT",
+  "tested_revision": "83a7a5184a59fe2fc14c84035fde089e769edefa",
+  "publication_revision": "83a7a5184a59fe2fc14c84035fde089e769edefa",
   "worktree_identity": {
     "branch": "main",
     "base_revision": "5f6597f951a12c14025e4f46d53ff19224ed60e5",
-    "implementation_tree": "f61e7eb7914387de71aca3a01bb387ac21bdbd8e",
+    "implementation_tree": "716f98b714b7ce0216366429a5d908c07f12a1c7",
     "canonical_remote": "origin",
     "canonical_branch": "main",
+    "upstream_ahead": 4,
+    "upstream_behind": 0,
+    "registered_worktrees": 1,
     "implementation_worktree_clean_at_test": true
   },
   "classification": {
@@ -132,10 +135,31 @@
     "go_characterization": {
       "path": "whatsapp-bridge/bridge/pure_helpers_test.go",
       "sha256": "2f4d5d5e112f534eba4b9c398b1dba60667db3372401b1b96862d8e4cdd80035"
+    },
+    "python_composition_root": {
+      "path": "whatsapp-mcp-server/main.py",
+      "sha256": "095d783af9d0bdcc97481b7442ce688ac313e93628e0c2a7c4edb9111ca2389a"
+    },
+    "python_tool_registration": {
+      "path": "whatsapp-mcp-server/tools.py",
+      "sha256": "85fcf570fd835836fcf3196dcd2969d0dffa8831350d98cc64aaa0467a2d76c3"
+    },
+    "inventory_record_at_tested_revision": {
+      "path": "docs/architecture/adoption/inventory.md",
+      "sha256": "1468ba552532a96c7c69cef5e22fe67460d8f74555d37c9e1ed82fcf80dd09d4"
+    },
+    "contract_review_record_at_tested_revision": {
+      "path": "docs/architecture/adoption/contract-review.md",
+      "sha256": "fd1e3a071fb3f2fdeb445ac83c2941e6778d80d0aa1969cf170f2e8671831ef3"
+    },
+    "quality_review_record_at_tested_revision": {
+      "path": "docs/architecture/adoption/quality-review.md",
+      "sha256": "23c93fc3c830af6eee9457b14f06473f7aefe82c8dcb39580742a577980348e8"
     }
   },
   "architecture_result": {
     "status": "pass",
+    "run_id": "45fc4476-2157-4ef7-9551-00f4638735a5",
     "files_scanned": 42,
     "governed_files": 42,
     "outside_governance": 0,
@@ -170,36 +194,50 @@
       "command": "candidate-bound sync-pre-commit-configs --check --project whatsapp-mcp",
       "status": "pass",
       "result": "The generated config matches control candidate 3c9c188 and its registry/override inputs."
+    },
+    {
+      "command": "candidate-bound std028_adoption_status.py --format json",
+      "status": "pass",
+      "result": "whatsapp-mcp is surface-complete with contract_state adopted-required and no missing surfaces."
     }
   ],
   "installed_hooks": {
+    "status": "pass",
     "pre_commit_path": ".git/hooks/pre-commit",
     "pre_commit_present": true,
+    "pre_commit_sha256": "54ab74751a90ec9f9c4daa9d9e163e14726e4180df4187b045737005cce0d8a8",
     "pre_push_link": "/Users/paulrohde/.local/share/codeprojects-control-plane/current/hooks/pre-push-composite",
     "pre_push_resolved_revision": "812fdd7951c0b18c2070c939d6bfe83c829928b1",
+    "pre_push_sha256": "68e9e53bfd14b2256374af7eb99cdc221f6ac0279039a9f89f683a3b73bf0a58",
     "generated_config_executed": true,
-    "installed_pre_push_execution": "pending-final-push"
+    "installed_pre_commit_execution": "pass",
+    "installed_pre_push_execution": "pass"
   },
   "independent_reviews": {
     "contract": {
       "path": "docs/architecture/adoption/contract-review.md",
       "status": "APPROVED",
-      "candidate_revision": "b40403ae45cfc401619e477479e0a9989c602c69"
+      "candidate_revision": "83a7a5184a59fe2fc14c84035fde089e769edefa"
     },
     "quality": {
       "path": "docs/architecture/adoption/quality-review.md",
       "status": "APPROVED",
-      "candidate_revision": "b40403ae45cfc401619e477479e0a9989c602c69"
+      "candidate_revision": "83a7a5184a59fe2fc14c84035fde089e769edefa"
     },
-    "scope": "Independent review rejected 55d6bf4, then approved the corrected source and contract at b40403a. Exact record-bound revision review remains."
+    "scope": "Independent review rejected 55d6bf4, approved the corrected source and contract at b40403a, and approved exact record-bound revision 83a7a51."
   },
   "publication_proof": {
-    "status": "pending",
+    "status": "pass",
     "remote": "origin",
     "branch": "main",
-    "published_revision": null,
-    "tested_revision_reachable_from_published_revision": false,
-    "repository_pre_push_hooks": "pending"
+    "published_revision": "83a7a5184a59fe2fc14c84035fde089e769edefa",
+    "tested_revision_reachable_from_published_revision": true,
+    "repository_pre_push_hooks": "pass",
+    "tier_zero_focused_commit_check": "pass"
+  },
+  "static_warning": {
+    "check": "testing:markers",
+    "reason": "The checkout-local architecture regression suite uses standard-library unittest and therefore has no pytest marker."
   },
   "live_boundaries": {
     "go_bridge_executed": false,
@@ -212,8 +250,6 @@
     "runtime_processes_signaled": false,
     "private_logs_read": false
   },
-  "blockers": [
-    "The approved architecture status and durable adoption records are not yet bound to an exact independently reviewed revision."
-  ],
-  "next_action": "Commit the approved records, rerun exact non-live proof, and obtain a final record-bound revision review."
+  "blockers": [],
+  "next_action": "Promote whatsapp-mcp to CONFORMANT in the canonical STD-028 rollout ledger."
 }

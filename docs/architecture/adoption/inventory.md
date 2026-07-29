@@ -2,13 +2,12 @@
 created: 2026-07-23
 last_updated: 2026-07-28
 standard: STD-028 v1.37
-status: approved-pending-final-rebind
+status: approved
 ---
 # whatsapp-mcp STD-028 adoption inventory
 
-Status: independent contract and quality approval at exact corrective
-implementation revision `b40403ae45cfc401619e477479e0a9989c602c69`;
-final record-bound revision review pending.
+Status: `CONFORMANT` at exact record-bound revision
+`83a7a5184a59fe2fc14c84035fde089e769edefa`.
 
 ## Identity and classification
 
@@ -71,6 +70,11 @@ ratchets; and fixed an OpusHead offset bug exposed by new characterization.
 Independent evidence-only review approved both the architecture contract and
 implementation quality with no blocking findings.
 
+Final evidence-only rebind approved exact record-bound revision
+`83a7a5184a59fe2fc14c84035fde089e769edefa`. Its only delta from the approved
+corrective implementation is the architecture approval status and durable
+adoption records; no source, contract, test, hook, or baseline bytes changed.
+
 Accepted residuals are recorded in the quality review. They include heuristic
 limits in the symbol and SQL ratchets, pre-existing unused exported store
 surface, duplicated filesystem-path knowledge, duplicated history text
@@ -88,6 +92,8 @@ path, forbidden edge, cycle, or baseline exception.
 - Both generated hook stages passed.
 - Candidate-bound generator equivalence and surface-complete adoption status
   passed at control candidate `3c9c188bf9d7074c70eb83839590bab48fe8abc1`.
+- The installed composite pre-push hook passed the exact record-bound revision
+  with its Tier 0 focused commit check.
 
 ## Safety boundary
 
