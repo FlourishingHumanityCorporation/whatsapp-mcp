@@ -5,8 +5,12 @@ repos:
     rev: v5.0.0
     hooks:
       - id: trailing-whitespace
+        stages:
+          - pre-commit
         exclude: (^|/)evals/(data|results)/
       - id: end-of-file-fixer
+        stages:
+          - pre-commit
         exclude: (^|/)evals/(data|results)/
       - id: check-yaml
       - id: check-toml
@@ -17,6 +21,8 @@ repos:
       - id: detect-private-key
       - id: mixed-line-ending
         args: [--fix=lf]
+        stages:
+          - pre-commit
         exclude: (^|/)evals/(data|results)/
       - id: check-case-conflict
   - repo: https://github.com/gitleaks/gitleaks
@@ -43,7 +49,7 @@ repos:
         require_serial: true
       - id: silent-degradation-gate
         name: silent-degradation gate (no new HIGH)
-        entry: bash -c 'exec $HOME/CodeProjects/tools/code-hygiene/.venv/bin/code-hygiene audit silent-degradation --path . --gate --repo-only'
+        entry: bash -c 'exec $HOME/CodeProjects/.meta/hooks/run-in-candidate-checkout $HOME/CodeProjects/tools/code-hygiene/.venv/bin/code-hygiene audit silent-degradation --path . --gate --repo-only'
         language: system
         files: \.py$
         pass_filenames: false
