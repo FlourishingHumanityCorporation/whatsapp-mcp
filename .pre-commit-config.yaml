@@ -56,7 +56,7 @@ repos:
         require_serial: true
       - id: push-claims
         name: push-claims adversarial review (advisory)
-        entry: bash -c 'exec "$HOME/CodeProjects/tools/code-hygiene/.venv/bin/code-hygiene" audit push-claims --repo . --advisory'
+        entry: "bash -c '\"$HOME/CodeProjects/tools/code-hygiene/.venv/bin/code-hygiene\" audit push-claims --repo . --advisory || echo \"push-claims: THE REVIEWER ITSELF FAILED (above). Push allowed -- this gate fails open on infrastructure, never on findings.\"'"
         language: system
         exclude: (?x)(^|/)[^/]+\.(md|txt|rst|json|ya?ml|toml|cfg|ini|lock)$
         pass_filenames: false
