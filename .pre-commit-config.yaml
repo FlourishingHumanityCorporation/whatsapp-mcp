@@ -54,6 +54,16 @@ repos:
         files: \.py$
         pass_filenames: false
         require_serial: true
+      - id: push-claims
+        name: push-claims adversarial review (advisory)
+        entry: bash -c 'exec "$HOME/CodeProjects/tools/code-hygiene/.venv/bin/code-hygiene" audit push-claims --repo . --advisory'
+        language: system
+        exclude: (?x)(^|/)[^/]+\.(md|txt|rst|json|ya?ml|toml|cfg|ini|lock)$
+        pass_filenames: false
+        require_serial: true
+        verbose: true
+        stages:
+          - pre-push
       - id: go-package-compile
         name: Go package compile
         entry: bash -c 'cd whatsapp-bridge && go test ./...'
