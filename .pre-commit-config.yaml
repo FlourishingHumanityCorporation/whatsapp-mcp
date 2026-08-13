@@ -25,6 +25,14 @@ repos:
           - pre-commit
         exclude: (^|/)evals/(data|results)/
       - id: check-case-conflict
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.15.6
+    hooks:
+      - id: ruff
+        args: [--select, E9]
+        stages:
+          - pre-commit
+        name: ruff (syntax only — repo opts out of lint)
   - repo: https://github.com/gitleaks/gitleaks
     rev: v8.30.0
     hooks:
