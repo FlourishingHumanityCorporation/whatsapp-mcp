@@ -14,7 +14,12 @@ MESSAGES_DB_PATH = os.path.join(
     "store",
     "messages.db",
 )
-WHATSAPP_API_BASE_URL = "http://localhost:8080/api"
+# The bridge's REST port is not owned in the workspace port registry and collides
+# with other local services, so both sides read it from the environment. Keep this
+# in step with WHATSAPP_BRIDGE_PORT on the bridge.
+WHATSAPP_API_BASE_URL = os.environ.get(
+    "WHATSAPP_BRIDGE_URL", "http://localhost:8080/api"
+).rstrip("/")
 
 # How long to wait on the bridge's own liveness endpoint. It is a local process, so
 # a slow answer means something is wrong rather than something is busy.
@@ -71,16 +76,18 @@ def check_bridge(timeout: float = BRIDGE_HEALTH_TIMEOUT_SECONDS) -> BridgeStatus
         return unreachable
 
     if response.status_code == 404:
-        return BridgeStatus(
-            running=True,
-            connected=False,
-            logged_in=False,
-            last_message_time=None,
-            detail=(
-                "A bridge is running but predates the /api/health endpoint, so its "
-                "connection state cannot be read. Rebuild it from the current source."
-            ),
+        # Something is listening but does not serve /api/health. That is either a
+        # bridge built before this endpoint existed, or an unrelated service that
+        # owns the port. Both are reported, because guessing between them once
+        # sent an operator to rebuild a bridge that was never the problem.
+        unreachable.running = True
+        unreachable.detail = (
+            f"Something is listening at {WHATSAPP_API_BASE_URL} but does not serve "
+            "/api/health. Either the bridge predates that endpoint and needs "
+            "rebuilding, or another service owns the port. Check with: "
+            "lsof -nP -iTCP:<port> -sTCP:LISTEN"
         )
+        return unreachable
 
     if response.status_code != 200:
         unreachable.running = True
@@ -94,6 +101,16 @@ def check_bridge(timeout: float = BRIDGE_HEALTH_TIMEOUT_SECONDS) -> BridgeStatus
     except json.JSONDecodeError as e:
         unreachable.running = True
         unreachable.detail = f"The bridge returned an unreadable health response: {e}"
+        return unreachable
+
+    if not isinstance(payload, dict) or "connected" not in payload:
+        # A 200 from something that is not the bridge. Without this check its
+        # response would be read as a bridge reporting connected=False.
+        unreachable.running = True
+        unreachable.detail = (
+            f"The service at {WHATSAPP_API_BASE_URL} answered /api/health but not "
+            "with a bridge health payload, so another service likely owns the port."
+        )
         return unreachable
 
     last_message_time = None

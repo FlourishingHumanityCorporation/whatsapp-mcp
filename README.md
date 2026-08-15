@@ -183,6 +183,22 @@ By default, just the metadata of the media is stored in the local database. The 
 - If you encounter permission issues when running uv, you may need to add it to your PATH or use the full path to the executable.
 - Make sure both the Go application and the Python server are running for the integration to work properly.
 
+### Bridge REST Port Conflict
+
+The bridge REST API defaults to 8080, a port this project does not own. If
+another service already answers there, the bridge stops before pairing:
+
+```
+[Client ERROR] another service is already answering on 127.0.0.1:8080, ...
+```
+
+Point both sides at a free port — they must agree:
+
+```bash
+WHATSAPP_BRIDGE_PORT=9114 go run main.go   # bridge
+WHATSAPP_BRIDGE_URL=http://localhost:9114/api   # MCP server
+```
+
 ### Bridge Refuses to Connect (`Client outdated (405)`)
 
 WhatsApp rejects clients whose protocol version has aged out, so a bridge that

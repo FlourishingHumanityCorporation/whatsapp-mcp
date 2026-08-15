@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"os"
 	"os/signal"
+	"strconv"
 	"syscall"
 	"time"
 
@@ -16,10 +17,52 @@ import (
 	waLog "go.mau.fi/whatsmeow/util/log"
 )
 
+// DefaultRESTPort is the historical REST port. It is not owned in the workspace
+// port registry and collides with other local services, so it can be overridden.
+const DefaultRESTPort = 8080
+
+// restPort resolves the REST port from WHATSAPP_BRIDGE_PORT.
+//
+// An unusable value is an error rather than a fallback to the default: silently
+// serving on a port the operator did not choose is how a bridge ends up looking
+// healthy while nothing can reach it.
+func restPort() (int, error) {
+	raw := os.Getenv("WHATSAPP_BRIDGE_PORT")
+	if raw == "" {
+		return DefaultRESTPort, nil
+	}
+
+	port, err := strconv.Atoi(raw)
+	if err != nil || port < 1 || port > 65535 {
+		return 0, fmt.Errorf("WHATSAPP_BRIDGE_PORT must be a port number between 1 and 65535, got %q", raw)
+	}
+
+	return port, nil
+}
+
 func Run() {
 	// Set up logger
 	logger := waLog.Stdout("Client", "INFO", true)
 	logger.Infof("Starting WhatsApp client...")
+
+	// Check the REST port before touching WhatsApp, so a conflict is reported
+	// without first walking the operator through a QR scan. The port is only
+	// claimed once connected: holding it through the pairing wait would accept
+	// connections meant for whatever else uses it, and answer none of them.
+	port, err := restPort()
+	if err != nil {
+		logger.Errorf("%v", err)
+		return
+	}
+
+	if err := ensureRESTPortFree(port); err != nil {
+		logger.Errorf("%v", err)
+		logger.Errorf(
+			"Set WHATSAPP_BRIDGE_PORT to a free port and point the MCP server at it "+
+				"with WHATSAPP_BRIDGE_URL=http://localhost:<port>/api",
+		)
+		return
+	}
 
 	// Create database connection for storing session data
 	dbLog := waLog.Stdout("Database", "INFO", true)
@@ -138,8 +181,18 @@ func Run() {
 
 	fmt.Println("\n✓ Connected to WhatsApp! Type 'help' for commands.")
 
-	// Start REST API server
-	startRESTServer(client, messageStore, 8080)
+	// Start REST API server on the port checked before pairing
+	listener, err := bindRESTListener(port)
+	if err != nil {
+		// Continuing would leave a connected bridge whose send, download and health
+		// endpoints are unreachable, with the reason in a log nobody reads.
+		logger.Errorf("%v", err)
+		client.Disconnect()
+		return
+	}
+	defer listener.Close()
+
+	startRESTServer(client, messageStore, listener)
 
 	// Create a channel to keep the main goroutine alive
 	exitChan := make(chan os.Signal, 1)
