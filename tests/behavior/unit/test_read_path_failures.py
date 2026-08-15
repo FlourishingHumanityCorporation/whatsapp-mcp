@@ -107,6 +107,154 @@ print(json.dumps(outcome))
 '''
 
 
+TOOL_PROBE_SOURCE = """
+import json
+import os
+import sys
+import types
+
+sys.path.insert(0, os.environ["WHATSAPP_SERVER_DIR"])
+
+# tools.py imports FastMCP, which is not installed in the check interpreter. Only
+# the decorator is stubbed: it registers the function in production and is
+# irrelevant to what the tool bodies return, which is what this asserts. The real
+# transport is covered separately by calling the published MCP tools.
+fastmcp_module = types.ModuleType("mcp.server.fastmcp")
+
+
+class FastMCP:
+    def __init__(self, *args, **kwargs):
+        pass
+
+    def tool(self, *args, **kwargs):
+        return lambda function: function
+
+
+fastmcp_module.FastMCP = FastMCP
+mcp_package = types.ModuleType("mcp")
+server_package = types.ModuleType("mcp.server")
+sys.modules["mcp"] = mcp_package
+sys.modules["mcp.server"] = server_package
+sys.modules["mcp.server.fastmcp"] = fastmcp_module
+
+import whatsapp
+
+whatsapp.MESSAGES_DB_PATH = os.environ["WHATSAPP_DB_PATH"]
+whatsapp.WHATSAPP_API_BASE_URL = os.environ["WHATSAPP_API_BASE_URL"]
+
+import tools
+
+outcome = {}
+
+for name, call in (
+    ("chats", lambda: tools.list_chats(include_last_message=True)),
+    ("chats_without_last", lambda: tools.list_chats(include_last_message=False)),
+    ("contacts", lambda: tools.search_contacts("fixture")),
+):
+    try:
+        payload = call()
+        # The defect was returning dataclasses where dicts were declared, which
+        # FastMCP rejects. Serializing is what proves the conversion happened.
+        json.dumps(payload)
+        outcome[name] = {
+            "raised": None,
+            "count": len(payload),
+            "all_dicts": all(isinstance(item, dict) for item in payload),
+        }
+    except Exception as error:
+        outcome[name] = {"raised": type(error).__name__, "detail": str(error)}
+
+print(json.dumps(outcome))
+"""
+
+
+def _build_fixture_store(database_path: Path) -> Path:
+    """Create a throwaway store with the bridge's schema and two chats."""
+    connection = sqlite3.connect(database_path)
+    try:
+        connection.executescript(FIXTURE_SCHEMA)
+        connection.execute(
+            "INSERT INTO chats (jid, name, last_message_time) VALUES (?, ?, ?)",
+            ("15550000001@s.whatsapp.net", "Fixture Contact", "2026-01-01T09:00:00"),
+        )
+        connection.execute(
+            "INSERT INTO chats (jid, name, last_message_time) VALUES (?, ?, ?)",
+            ("15550000002@g.us", "Fixture Group", "2026-01-02T09:00:00"),
+        )
+        connection.execute(
+            "INSERT INTO messages (id, chat_jid, sender, content, timestamp, is_from_me)"
+            " VALUES (?, ?, ?, ?, ?, ?)",
+            (
+                "msg-1",
+                "15550000001@s.whatsapp.net",
+                "15550000001@s.whatsapp.net",
+                "fixture message",
+                "2026-01-01T09:00:00",
+                False,
+            ),
+        )
+        connection.commit()
+    finally:
+        connection.close()
+
+    return database_path
+
+
+class ToolPayloadTests(unittest.TestCase):
+    """MCP tools must return JSON-serializable dictionaries, not dataclasses."""
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls._workspace = tempfile.TemporaryDirectory()
+        workspace = Path(cls._workspace.name)
+        database_path = _build_fixture_store(workspace / "messages.db")
+
+        probe_path = workspace / "tool_probe.py"
+        probe_path.write_text(TOOL_PROBE_SOURCE)
+
+        completed = subprocess.run(
+            [sys.executable, str(probe_path)],
+            capture_output=True,
+            text=True,
+            timeout=120,
+            env={
+                "PATH": "/usr/bin:/bin",
+                "WHATSAPP_SERVER_DIR": str(SERVER_DIR),
+                "WHATSAPP_DB_PATH": str(database_path),
+                "WHATSAPP_API_BASE_URL": DEAD_BRIDGE_URL,
+            },
+        )
+        if completed.returncode != 0:
+            raise AssertionError(
+                f"tool payload probe failed ({completed.returncode}): {completed.stderr}"
+            )
+        cls.outcome = json.loads(completed.stdout)
+
+    @classmethod
+    def tearDownClass(cls) -> None:
+        cls._workspace.cleanup()
+
+    def test_list_chats_returns_serializable_dictionaries(self) -> None:
+        """Populated results must survive the declared dict-list output type.
+
+        This stayed invisible while the reads returned empty lists, because an
+        empty list validates against any item type.
+        """
+        for key in ("chats", "chats_without_last"):
+            with self.subTest(variant=key):
+                result = self.outcome[key]
+
+                self.assertIsNone(result["raised"], result)
+                self.assertEqual(result["count"], 2)
+                self.assertTrue(result["all_dicts"], result)
+
+    def test_search_contacts_returns_serializable_dictionaries(self) -> None:
+        result = self.outcome["contacts"]
+
+        self.assertIsNone(result["raised"], result)
+        self.assertTrue(result["all_dicts"], result)
+
+
 class ReadPathFailureTests(unittest.TestCase):
     """A failed read must never be returned as an empty result."""
 
@@ -115,37 +263,7 @@ class ReadPathFailureTests(unittest.TestCase):
         cls._workspace = tempfile.TemporaryDirectory()
         workspace = Path(cls._workspace.name)
 
-        database_path = workspace / "messages.db"
-        connection = sqlite3.connect(database_path)
-        try:
-            connection.executescript(FIXTURE_SCHEMA)
-            connection.execute(
-                "INSERT INTO chats (jid, name, last_message_time) VALUES (?, ?, ?)",
-                (
-                    "15550000001@s.whatsapp.net",
-                    "Fixture Contact",
-                    "2026-01-01T09:00:00",
-                ),
-            )
-            connection.execute(
-                "INSERT INTO chats (jid, name, last_message_time) VALUES (?, ?, ?)",
-                ("15550000002@g.us", "Fixture Group", "2026-01-02T09:00:00"),
-            )
-            connection.execute(
-                "INSERT INTO messages (id, chat_jid, sender, content, timestamp, is_from_me)"
-                " VALUES (?, ?, ?, ?, ?, ?)",
-                (
-                    "msg-1",
-                    "15550000001@s.whatsapp.net",
-                    "15550000001@s.whatsapp.net",
-                    "fixture message",
-                    "2026-01-01T09:00:00",
-                    False,
-                ),
-            )
-            connection.commit()
-        finally:
-            connection.close()
+        database_path = _build_fixture_store(workspace / "messages.db")
 
         probe_path = workspace / "probe.py"
         probe_path.write_text(PROBE_SOURCE)

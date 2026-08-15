@@ -1,3 +1,5 @@
+import dataclasses
+from datetime import datetime
 from typing import List, Dict, Any, Optional
 from mcp.server.fastmcp import FastMCP
 from whatsapp import (
@@ -18,6 +20,27 @@ from whatsapp import (
 
 # Initialize FastMCP server
 mcp = FastMCP("whatsapp")
+
+
+def _as_payload(value: Any) -> Any:
+    """Convert whatsapp.py's dataclasses into JSON-serializable dictionaries.
+
+    The tools below declare dict-shaped output but the access layer returns
+    dataclasses, so FastMCP rejects every populated response with a pydantic
+    dict_type error. That mismatch stayed invisible while the read paths were
+    returning empty lists, because an empty list validates against any item type;
+    it surfaced on the first query that actually found rows.
+    """
+    if dataclasses.is_dataclass(value) and not isinstance(value, type):
+        return {
+            field.name: _as_payload(getattr(value, field.name))
+            for field in dataclasses.fields(value)
+        }
+    if isinstance(value, datetime):
+        return value.isoformat()
+    if isinstance(value, list):
+        return [_as_payload(item) for item in value]
+    return value
 
 
 @mcp.tool()
@@ -49,7 +72,7 @@ def search_contacts(query: str) -> List[Dict[str, Any]]:
         query: Search term to match against contact names or phone numbers
     """
     contacts = whatsapp_search_contacts(query)
-    return contacts
+    return _as_payload(contacts)
 
 
 @mcp.tool()
@@ -64,8 +87,12 @@ def list_messages(
     include_context: bool = True,
     context_before: int = 1,
     context_after: int = 1,
-) -> List[Dict[str, Any]]:
+) -> str:
     """Get WhatsApp messages matching specified criteria with optional context.
+
+    Returns a formatted transcript, one message per line. Declared as text because
+    that is what the access layer produces; the previous dict-list annotation
+    could only ever have validated against an empty result.
 
     Args:
         after: Optional ISO-8601 formatted string to only return messages after this date
@@ -118,11 +145,13 @@ def list_chats(
         include_last_message=include_last_message,
         sort_by=sort_by,
     )
-    return chats
+    return _as_payload(chats)
 
 
 @mcp.tool()
-def get_chat(chat_jid: str, include_last_message: bool = True) -> Dict[str, Any]:
+def get_chat(
+    chat_jid: str, include_last_message: bool = True
+) -> Optional[Dict[str, Any]]:
     """Get WhatsApp chat metadata by JID.
 
     Args:
@@ -130,18 +159,18 @@ def get_chat(chat_jid: str, include_last_message: bool = True) -> Dict[str, Any]
         include_last_message: Whether to include the last message (default True)
     """
     chat = whatsapp_get_chat(chat_jid, include_last_message)
-    return chat
+    return _as_payload(chat)
 
 
 @mcp.tool()
-def get_direct_chat_by_contact(sender_phone_number: str) -> Dict[str, Any]:
+def get_direct_chat_by_contact(sender_phone_number: str) -> Optional[Dict[str, Any]]:
     """Get WhatsApp chat metadata by sender phone number.
 
     Args:
         sender_phone_number: The phone number to search for
     """
     chat = whatsapp_get_direct_chat_by_contact(sender_phone_number)
-    return chat
+    return _as_payload(chat)
 
 
 @mcp.tool()
@@ -154,11 +183,11 @@ def get_contact_chats(jid: str, limit: int = 20, page: int = 0) -> List[Dict[str
         page: Page number for pagination (default 0)
     """
     chats = whatsapp_get_contact_chats(jid, limit, page)
-    return chats
+    return _as_payload(chats)
 
 
 @mcp.tool()
-def get_last_interaction(jid: str) -> str:
+def get_last_interaction(jid: str) -> Optional[str]:
     """Get most recent WhatsApp message involving the contact.
 
     Args:
@@ -180,7 +209,7 @@ def get_message_context(
         after: Number of messages to include after the target message (default 5)
     """
     context = whatsapp_get_message_context(message_id, before, after)
-    return context
+    return _as_payload(context)
 
 
 @mcp.tool()
