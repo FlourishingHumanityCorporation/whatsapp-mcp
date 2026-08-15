@@ -20,12 +20,17 @@ test-policy:
 architecture-contract-test:
 	$(PYTHON) -m unittest discover -s tests/architecture/unit -p 'test_*.py' -v 2>&1
 
+# Read-path behavior. Non-live by contract: exercises whatsapp.py against a
+# throwaway fixture store, never the operator's message store or the bridge.
+behavior-test:
+	$(PYTHON) -m unittest discover -s tests/behavior/unit -p 'test_*.py' -v 2>&1
+
 architecture-check:
 	APPCHECK_PROJECTS_JSON="$(CURDIR)/.appcheck/projects.json" \
 	APPCHECK_CODEPROJECTS_ROOT="$(CURDIR)" \
 	appcheck run whatsapp-mcp --category architecture
 
-check: python-compile go-test test-policy architecture-contract-test architecture-check
+check: python-compile go-test test-policy architecture-contract-test architecture-check behavior-test
 	@echo "whatsapp-mcp non-live checks passed"
 
 python-compile:

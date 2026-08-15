@@ -174,7 +174,7 @@ extensions = [".py", ".go"]
 enabled = false
 
 [testing]
-service_markers = ["live_whatsapp", "whatsapp_bridge", "personal_messages", "message_send", "media_download"]
+service_markers = ["live_whatsapp", "whatsapp_bridge", "personal_messages", "message_send", "media_download", "sqlite", "filesystem"]
 xfail_require_strict = true
 
 [standards]

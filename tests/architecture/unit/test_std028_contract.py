@@ -36,6 +36,26 @@ class ArchitectureContractTests(unittest.TestCase):
             makefile,
         )
 
+    def test_read_path_behavior_is_gated_by_the_native_check(self) -> None:
+        """Compiling whatsapp.py proves it parses, never that it behaves.
+
+        The 2026-08-15 empty-result defect compiled cleanly, so `make check` must
+        also run the non-live read-path tests.
+        """
+        makefile = (PROJECT_ROOT / "Makefile").read_text()
+
+        self.assertIn("behavior-test:", makefile)
+        self.assertIn(
+            "$(PYTHON) -m unittest discover -s tests/behavior/unit "
+            "-p 'test_*.py' -v 2>&1",
+            makefile,
+        )
+        self.assertRegex(makefile, r"(?m)^check:.*\bbehavior-test\b")
+        self.assertTrue(
+            (PROJECT_ROOT / "tests" / "behavior" / "unit").is_dir(),
+            "behavior-test target has no test directory to discover",
+        )
+
     def test_persisted_runtime_paths_are_composition_roots_not_entry_points(
         self,
     ) -> None:
@@ -52,17 +72,11 @@ class ArchitectureContractTests(unittest.TestCase):
     def test_runtime_source_roots_remain_small_and_explicit(self) -> None:
         self.assertEqual(self.config["architecture"]["max_root_files"], 8)
         self.assertEqual(
-            {
-                path.name
-                for path in (PROJECT_ROOT / "whatsapp-mcp-server").glob("*.py")
-            },
+            {path.name for path in (PROJECT_ROOT / "whatsapp-mcp-server").glob("*.py")},
             {"audio.py", "main.py", "tools.py", "whatsapp.py"},
         )
         self.assertEqual(
-            {
-                path.name
-                for path in (PROJECT_ROOT / "whatsapp-bridge").glob("*.go")
-            },
+            {path.name for path in (PROJECT_ROOT / "whatsapp-bridge").glob("*.go")},
             {"main.go"},
         )
         self.assertEqual(
@@ -82,20 +96,24 @@ class ArchitectureContractTests(unittest.TestCase):
                 "store.go",
             },
         )
-        for source_path in (
-            PROJECT_ROOT / "whatsapp-bridge" / "bridge"
-        ).glob("*.go"):
+        for source_path in (PROJECT_ROOT / "whatsapp-bridge" / "bridge").glob("*.go"):
             self.assertLessEqual(
                 len(source_path.read_text().splitlines()),
                 500,
                 f"{source_path.name} exceeds the file-level ownership ratchet",
             )
         self.assertLessEqual(
-            len((PROJECT_ROOT / "whatsapp-bridge" / "main.go").read_text().splitlines()),
+            len(
+                (PROJECT_ROOT / "whatsapp-bridge" / "main.go").read_text().splitlines()
+            ),
             200,
         )
         self.assertLessEqual(
-            len((PROJECT_ROOT / "whatsapp-mcp-server" / "main.py").read_text().splitlines()),
+            len(
+                (PROJECT_ROOT / "whatsapp-mcp-server" / "main.py")
+                .read_text()
+                .splitlines()
+            ),
             200,
         )
         baseline = json.loads(
@@ -107,8 +125,7 @@ class ArchitectureContractTests(unittest.TestCase):
         self,
     ) -> None:
         modules = {
-            module["name"]: module
-            for module in self.config["architecture"]["modules"]
+            module["name"]: module for module in self.config["architecture"]["modules"]
         }
 
         self.assertEqual(
@@ -155,8 +172,7 @@ class ArchitectureContractTests(unittest.TestCase):
 
     def test_same_package_go_calls_match_the_declared_acyclic_graph(self) -> None:
         modules = {
-            module["name"]: module
-            for module in self.config["architecture"]["modules"]
+            module["name"]: module for module in self.config["architecture"]["modules"]
         }
         source_owners = {
             "whatsapp-bridge/main.go": "bridge_composition",
@@ -235,9 +251,7 @@ class ArchitectureContractTests(unittest.TestCase):
                     for symbol in symbols
                 )
             }
-            declared_dependencies = set(
-                modules[source_owner]["may_depend_on"]
-            )
+            declared_dependencies = set(modules[source_owner]["may_depend_on"])
             self.assertLessEqual(
                 actual_dependencies,
                 declared_dependencies,
@@ -269,9 +283,7 @@ class ArchitectureContractTests(unittest.TestCase):
             visit(owner)
 
     def test_sqlite_schema_knowledge_stays_inside_the_store_owner(self) -> None:
-        for source_path in (
-            PROJECT_ROOT / "whatsapp-bridge" / "bridge"
-        ).glob("*.go"):
+        for source_path in (PROJECT_ROOT / "whatsapp-bridge" / "bridge").glob("*.go"):
             if source_path.name == "store.go":
                 continue
             source = source_path.read_text()
@@ -307,12 +319,13 @@ class ArchitectureContractTests(unittest.TestCase):
             "no Go capability owner exceeds 500 lines",
             normalized_architecture,
         )
-        self.assertNotIn("Further decomposition of the large implementation", architecture)
+        self.assertNotIn(
+            "Further decomposition of the large implementation", architecture
+        )
 
     def test_appcheck_validates_the_active_checkout(self) -> None:
         commands = {
-            check["name"]: check["command"]
-            for check in self.config["custom_checks"]
+            check["name"]: check["command"] for check in self.config["custom_checks"]
         }
 
         self.assertEqual(commands["check"], "make check")

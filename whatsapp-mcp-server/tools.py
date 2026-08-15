@@ -1,6 +1,7 @@
 from typing import List, Dict, Any, Optional
 from mcp.server.fastmcp import FastMCP
 from whatsapp import (
+    check_bridge as whatsapp_check_bridge,
     search_contacts as whatsapp_search_contacts,
     list_messages as whatsapp_list_messages,
     list_chats as whatsapp_list_chats,
@@ -17,6 +18,27 @@ from whatsapp import (
 
 # Initialize FastMCP server
 mcp = FastMCP("whatsapp")
+
+
+@mcp.tool()
+def bridge_status() -> Dict[str, Any]:
+    """Report whether the WhatsApp bridge is running, connected and logged in.
+
+    Every other tool reads a local store that only the bridge refreshes. Call this
+    when results look empty, sparse or out of date, to tell a genuinely quiet
+    account apart from a bridge that stopped syncing.
+    """
+    status = whatsapp_check_bridge()
+    return {
+        "running": status.running,
+        "connected": status.connected,
+        "logged_in": status.logged_in,
+        "usable": status.usable,
+        "last_message_time": status.last_message_time.isoformat()
+        if status.last_message_time
+        else None,
+        "detail": status.detail,
+    }
 
 
 @mcp.tool()
@@ -147,7 +169,9 @@ def get_last_interaction(jid: str) -> str:
 
 
 @mcp.tool()
-def get_message_context(message_id: str, before: int = 5, after: int = 5) -> Dict[str, Any]:
+def get_message_context(
+    message_id: str, before: int = 5, after: int = 5
+) -> Dict[str, Any]:
     """Get context around a specific WhatsApp message.
 
     Args:
@@ -223,11 +247,13 @@ def download_media(message_id: str, chat_jid: str) -> Dict[str, Any]:
         chat_jid: The JID of the chat containing the message
 
     Returns:
-        A dictionary containing success status, a status message, and the file path if successful
+        A dictionary containing success status, a status message, and the file path.
+        A failed download raises instead of reporting a generic failure, so the
+        caller sees why it failed rather than only that it did.
     """
     file_path = whatsapp_download_media(message_id, chat_jid)
-
-    if file_path:
-        return {"success": True, "message": "Media downloaded successfully", "file_path": file_path}
-    else:
-        return {"success": False, "message": "Failed to download media"}
+    return {
+        "success": True,
+        "message": "Media downloaded successfully",
+        "file_path": file_path,
+    }

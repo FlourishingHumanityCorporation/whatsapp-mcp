@@ -138,6 +138,20 @@ func (store *MessageStore) GetMessages(chatJID string, limit int) ([]Message, er
 	return messages, nil
 }
 
+// GetLastMessageTime returns the timestamp of the most recently stored message.
+// It reports the zero time when the store holds no messages, so a caller can tell
+// how stale the local history is.
+func (store *MessageStore) GetLastMessageTime() (time.Time, error) {
+	var timestamp time.Time
+	err := store.db.QueryRow(
+		"SELECT timestamp FROM messages ORDER BY timestamp DESC LIMIT 1",
+	).Scan(&timestamp)
+	if err == sql.ErrNoRows {
+		return time.Time{}, nil
+	}
+	return timestamp, err
+}
+
 // Get all chats
 func (store *MessageStore) GetChats() (map[string]time.Time, error) {
 	rows, err := store.db.Query("SELECT jid, last_message_time FROM chats ORDER BY last_message_time DESC")

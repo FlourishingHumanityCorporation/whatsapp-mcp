@@ -138,6 +138,7 @@ Once connected, you can interact with your WhatsApp contacts through Claude, lev
 
 Claude can access the following tools to interact with WhatsApp:
 
+- **bridge_status**: Report whether the bridge is running, connected and logged in, and how recent the local history is. Every other tool reads a store that only the bridge refreshes, so call this when results look empty or out of date.
 - **search_contacts**: Search for contacts by name or phone number
 - **list_messages**: Retrieve messages with optional filters and context
 - **list_chats**: List available chats with metadata
@@ -181,6 +182,29 @@ By default, just the metadata of the media is stored in the local database. The 
 
 - If you encounter permission issues when running uv, you may need to add it to your PATH or use the full path to the executable.
 - Make sure both the Go application and the Python server are running for the integration to work properly.
+
+### Bridge Refuses to Connect (`Client outdated (405)`)
+
+WhatsApp rejects clients whose protocol version has aged out, so a bridge that
+worked for months stops connecting without any change on this side:
+
+```
+[Client ERROR] Client outdated (405) connect failure (client version: 2.3000.x)
+[Client/Socket ERROR] Error reading from websocket: ... EOF
+```
+
+This is neither a session nor a QR problem: the connection is refused before
+authentication, so no QR is ever shown. The fix is to update the client and
+rebuild:
+
+```bash
+cd whatsapp-bridge && go get go.mau.fi/whatsmeow@latest && CGO_ENABLED=1 go build -o whatsapp-bridge .
+```
+
+Expect it roughly every few months. Because the reads serve a local store, the
+MCP tools keep answering from stale history while this is broken — call
+`bridge_status` to see the bridge's own connected/logged-in state rather than
+inferring health from whether results look reasonable.
 
 ### Authentication Issues
 

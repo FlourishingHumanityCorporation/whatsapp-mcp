@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"time"
 
 	"go.mau.fi/whatsmeow"
 )
@@ -33,6 +34,15 @@ type DownloadMediaResponse struct {
 	Message  string `json:"message"`
 	Filename string `json:"filename,omitempty"`
 	Path     string `json:"path,omitempty"`
+}
+
+// HealthResponse reports whether the bridge can currently reach WhatsApp, and how
+// recent the stored history is. Readers of the local store need this: without it a
+// stale or empty answer is indistinguishable from a bridge that is not connected.
+type HealthResponse struct {
+	Connected       bool   `json:"connected"`
+	LoggedIn        bool   `json:"logged_in"`
+	LastMessageTime string `json:"last_message_time,omitempty"`
 }
 
 // Start a REST API server to expose the WhatsApp client functionality
@@ -81,6 +91,32 @@ func startRESTServer(client *whatsmeow.Client, messageStore *MessageStore, port 
 			Success: success,
 			Message: message,
 		})
+	})
+
+	// Handler for reporting bridge liveness
+	http.HandleFunc("/api/health", func(w http.ResponseWriter, r *http.Request) {
+		// Only allow GET requests
+		if r.Method != http.MethodGet {
+			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+			return
+		}
+
+		response := HealthResponse{
+			Connected: client.IsConnected(),
+			LoggedIn:  client.IsLoggedIn(),
+		}
+
+		// Staleness is reported when it can be read; failing to read it must not
+		// take down the liveness answer the caller actually asked for.
+		lastMessageTime, err := messageStore.GetLastMessageTime()
+		if err != nil {
+			fmt.Printf("Health check could not read last message time: %v\n", err)
+		} else if !lastMessageTime.IsZero() {
+			response.LastMessageTime = lastMessageTime.Format(time.RFC3339)
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(response)
 	})
 
 	// Handler for downloading media
