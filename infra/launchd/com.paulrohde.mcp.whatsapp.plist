@@ -19,6 +19,11 @@
         <string>127.0.0.1</string>
         <key>WHATSAPP_MCP_PORT</key>
         <string>9106</string>
+        <!-- The Go bridge's REST API. Must match WHATSAPP_BRIDGE_PORT on the
+             bridge. Not the 8080 default: that port is unowned and is held by
+             ProjectPulse on this machine. -->
+        <key>WHATSAPP_BRIDGE_URL</key>
+        <string>http://localhost:9114/api</string>
         <key>PATH</key>
         <string>/Users/paulrohde/.local/bin:/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin</string>
     </dict>
