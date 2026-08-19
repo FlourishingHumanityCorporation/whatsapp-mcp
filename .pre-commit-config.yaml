@@ -62,16 +62,13 @@ repos:
         files: \.py$
         pass_filenames: false
         require_serial: true
-      - id: push-claims
-        name: push-claims adversarial review (advisory)
-        entry: "bash -c '\"$HOME/CodeProjects/tools/code-hygiene/.venv/bin/code-hygiene\" audit push-claims --repo . --advisory || echo \"push-claims: THE REVIEWER ITSELF FAILED (above). Push allowed -- this gate fails open on infrastructure, never on findings.\"'"
+      - id: phantom-index
+        name: phantom index entries (advisory)
+        entry: bash -c '"$HOME/CodeProjects/.meta/scripts/git-reconcile" phantom-index --repo . || echo "phantom-index ADVISORY -- the commit is allowed. Nothing above is necessarily yours; fix with git-reconcile phantom-index --repair, plus --repair-stale (optionally --path <p>) for the working-tree shape."'
         language: system
-        exclude: (?x)(^|/)[^/]+\.(md|txt|rst|json|ya?ml|toml|cfg|ini|lock)$
         pass_filenames: false
         require_serial: true
         verbose: true
-        stages:
-          - pre-push
       - id: go-package-compile
         name: Go package compile
         entry: bash -c 'cd whatsapp-bridge && go test ./...'
@@ -87,4 +84,5 @@ repos:
         require_serial: true
         stages:
           - pre-commit
+          - pre-merge-commit
           - pre-push
