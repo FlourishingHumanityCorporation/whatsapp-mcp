@@ -1,6 +1,6 @@
 PYTHON ?= $(shell ls $(HOME)/.pyenv/versions/3.1[2-9]*/bin/python3 2>/dev/null | sort -r | head -1 || echo python3)
 
-.PHONY: architecture-check architecture-contract-test check python-compile go-test help test-policy
+.PHONY: architecture-check architecture-contract-test check python-compile go-test help test-policy loc-check
 
 help:
 	@echo "make check - non-live Python syntax compile and Go package compile"
@@ -30,7 +30,7 @@ architecture-check:
 	APPCHECK_CODEPROJECTS_ROOT="$(CURDIR)" \
 	appcheck run whatsapp-mcp --category architecture
 
-check: python-compile go-test test-policy architecture-contract-test architecture-check behavior-test
+check: python-compile go-test test-policy architecture-contract-test architecture-check loc-check behavior-test
 	@echo "whatsapp-mcp non-live checks passed"
 
 python-compile:
@@ -38,3 +38,9 @@ python-compile:
 
 go-test:
 	cd whatsapp-bridge && go test ./...
+
+# STD-028 file-size cap, in the GATE rather than only in a report. With
+# `[loc] required = true` a new oversized file fails here instead of printing
+# a warning that nothing reads.
+loc-check:
+	appcheck run whatsapp-mcp --category loc

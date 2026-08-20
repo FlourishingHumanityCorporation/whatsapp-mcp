@@ -1,0 +1,25 @@
+{
+  "_readme": [
+    "STD-028 file-size ratchet. Enforced when `[loc] required = true` in appcheck.toml",
+    "and `loc` is part of `make check`, so a regression REFUSES the gate instead of",
+    "printing a warning nobody reads. The check names every offending file.",
+    "",
+    "A WORKLIST, not an exemption: an entry may LEAVE this file, never join it, and",
+    "no number here may rise. Lower the number in the same commit that shrinks the",
+    "file; stale debt is itself a gate failure.",
+    "",
+    "REGENERATE:  appcheck baseline loc <project> --apply",
+    "",
+    "Re-generating at an UNCHANGED cap is baseline-stuffing and is the recorded",
+    "anti-goal of this workstream. It is legitimate exactly twice: at the moment",
+    "enforcement is first armed, and when max_lines itself changes. Say which one",
+    "in the commit message.",
+    "",
+    "KNOWN LIMIT: keys are paths and there is no relocation allowance. RENAMING OR",
+    "MOVING a baselined file reads as new debt. Re-key that one entry in the same",
+    "commit as the move; do not regenerate the whole file."
+  ],
+  "files": {
+    "whatsapp-mcp-server/whatsapp.py": 782
+  }
+}
