@@ -41,7 +41,7 @@ repos:
     hooks:
       - id: test-policy-changed-files
         name: test policy changed-file guard
-        entry: bash -c 'exec python3 "$HOME/CodeProjects/.meta/scripts/test-policy-changed-files" "$@"' --
+        entry: bash -c 'exec python3 "$HOME/.local/share/codeprojects-control-plane/current/scripts/test-policy-changed-files" "$@"' --
         language: system
         files: (^|/)(tests/.*\.py|conftest\.py|test_.*\.py|appcheck\.toml|projects\.json|Makefile|package\.json)$
         pass_filenames: true
@@ -57,14 +57,14 @@ repos:
         require_serial: true
       - id: silent-degradation-gate
         name: silent-degradation gate (no new HIGH)
-        entry: bash -c 'exec $HOME/CodeProjects/.meta/hooks/run-in-candidate-checkout $HOME/CodeProjects/tools/code-hygiene/.venv/bin/code-hygiene audit silent-degradation --path . --gate --repo-only'
+        entry: bash -c 'exec $HOME/CodeProjects/.meta/hooks/run-in-candidate-checkout $HOME/CodeProjects/.meta/hooks/run-checker-from-committed-tree $HOME/CodeProjects/tools/code-hygiene/.venv/bin/code-hygiene audit silent-degradation --path . --gate --repo-only'
         language: system
         files: \.py$
         pass_filenames: false
         require_serial: true
       - id: phantom-index
         name: phantom index entries (advisory)
-        entry: bash -c '"$HOME/CodeProjects/.meta/scripts/git-reconcile" phantom-index --repo . || echo "phantom-index ADVISORY -- the commit is allowed. Nothing above is necessarily yours; fix with git-reconcile phantom-index --repair, plus --repair-stale (optionally --path <p>) for the working-tree shape."'
+        entry: bash -c '"$HOME/.local/share/codeprojects-control-plane/current/scripts/git-reconcile" phantom-index --repo . || echo "phantom-index ADVISORY -- the commit is allowed. Nothing above is necessarily yours; fix with git-reconcile phantom-index --repair, plus --repair-stale (optionally --path <p>) for the working-tree shape."'
         language: system
         pass_filenames: false
         require_serial: true
@@ -80,6 +80,17 @@ repos:
         entry: make architecture-check
         language: system
         files: ^(?:(?:\.pre-commit-config\.yaml|AGENTS\.md|CLAUDE\.md|Makefile|appcheck\.toml|pyproject\.toml|\.appcheck/architecture-baseline\.json|docs/architecture/ARCHITECTURE\.md|whatsapp-bridge|whatsapp-mcp-server|tests|infra|docs|\.appcheck/projects\.json|\.claudeignore|\.gitignore|LICENSE|README\.md|REBUILD\.md|automations\.toml|example-use\.png|\.appcheck|docs/architecture)$|(?:whatsapp-bridge/|whatsapp-mcp-server/|tests/|infra/|docs/)|(?:[^/]+)$)
+        pass_filenames: false
+        require_serial: true
+        stages:
+          - pre-commit
+          - pre-merge-commit
+          - pre-push
+      - id: loc-check
+        name: file-size ratchet (whatsapp-mcp)
+        entry: make loc-check
+        language: system
+        files: ^(?:.*\.py|.*\.go|appcheck\.toml|Makefile|\.pre\-commit\-config\.yaml|\.appcheck/loc\-baseline\.json)$
         pass_filenames: false
         require_serial: true
         stages:
