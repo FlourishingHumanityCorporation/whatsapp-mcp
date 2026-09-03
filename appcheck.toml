@@ -167,7 +167,7 @@ required = []
 optional = []
 
 [loc] # STD-028 fleet source cap. required=true so a NEW oversized file refuses make check.
-max_lines = 500
+max_lines = 700 # STD-028 fleet cap (ADR-0115)
 extensions = [".py", ".go"]
 baseline_file = ".appcheck/loc-baseline.json"
 required = true
