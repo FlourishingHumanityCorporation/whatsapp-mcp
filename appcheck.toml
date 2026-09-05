@@ -104,9 +104,14 @@ paths = ["whatsapp-mcp-server/audio.py"]
 may_depend_on = []
 
 [[architecture.modules]]
+name = "server_support"
+paths = ["whatsapp-mcp-server/support/*.py"]
+may_depend_on = ["server_audio"]
+
+[[architecture.modules]]
 name = "server_access"
 paths = ["whatsapp-mcp-server/whatsapp.py"]
-may_depend_on = ["server_audio"]
+may_depend_on = ["server_audio", "server_support"]
 
 [[architecture.modules]]
 name = "server_delivery"

@@ -77,6 +77,9 @@ whatsapp-mcp-server/
 ├── tools.py                 # MCP instance and tool registration
 ├── whatsapp.py              # local store and bridge access
 ├── audio.py                 # ffmpeg conversion boundary
+├── support/                 # typed models and bridge transport helpers
+    ├── models.py
+    └── messaging.py
 ├── pyproject.toml
 └── uv.lock
 
@@ -111,6 +114,7 @@ The human names below match the exact machine-owner names in
 | `bridge_test_consumers` | Non-live Go behavior characterization |
 | `bridge_build` | Go module and dependency lock |
 | `server_audio` | Audio conversion boundary |
+| `server_support` | Typed message models and bridge transport helpers |
 | `server_access` | Local store access and bridge client |
 | `server_delivery` | FastMCP tool registration and thin transport selection |
 | `server_build` | Nested Python environment and dependency lock |

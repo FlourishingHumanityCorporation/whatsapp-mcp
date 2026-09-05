@@ -42,11 +42,5 @@
     "MOVING a baselined file reads as new debt. Re-key that one entry in the same",
     "commit as the move; do not regenerate the whole file."
   ],
-  "files": {
-    "whatsapp-mcp-server/whatsapp.py": 782
-  },
-  "unit": "substance-tokens/v1",
-  "substance": {
-    "whatsapp-mcp-server/whatsapp.py": 3791
-  }
+  "files": {}
 }
