@@ -1,6 +1,6 @@
 ---
 created: 2026-07-23
-last_updated: 2026-07-28
+last_updated: 2026-09-24
 ---
 # Architecture: whatsapp-mcp
 
@@ -114,7 +114,7 @@ The human names below match the exact machine-owner names in
 | `bridge_test_consumers` | Non-live Go behavior characterization |
 | `bridge_build` | Go module and dependency lock |
 | `server_audio` | Audio conversion boundary |
-| `server_support` | Typed message models and bridge transport helpers |
+| `server_support` | Typed message models, bridge transport helpers, and the mixin that keeps sync MCP tools off the event loop |
 | `server_access` | Local store access and bridge client |
 | `server_delivery` | FastMCP tool registration and thin transport selection |
 | `server_build` | Nested Python environment and dependency lock |

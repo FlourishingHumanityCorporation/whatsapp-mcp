@@ -18,8 +18,15 @@ from whatsapp import (
     download_media as whatsapp_download_media,
 )
 
+from support.sync_tools import SyncToolsOffEventLoop
+
+
+class WhatsAppMCP(SyncToolsOffEventLoop, FastMCP):
+    """FastMCP that runs the sync WhatsApp tools on a worker thread, not the event loop."""
+
+
 # Initialize FastMCP server
-mcp = FastMCP("whatsapp")
+mcp = WhatsAppMCP("whatsapp")
 
 
 def _as_payload(value: Any) -> Any:

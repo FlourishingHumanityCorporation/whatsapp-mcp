@@ -116,7 +116,8 @@ may_depend_on = ["server_audio", "server_support"]
 [[architecture.modules]]
 name = "server_delivery"
 paths = ["whatsapp-mcp-server/main.py", "whatsapp-mcp-server/tools.py"]
-may_depend_on = ["server_access"]
+# server_support: support/sync_tools.py keeps the sync tools off the event loop.
+may_depend_on = ["server_access", "server_support"]
 
 [[architecture.modules]]
 name = "server_build"
